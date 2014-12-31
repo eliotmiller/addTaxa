@@ -1,0 +1,5 @@
+addTaxa is an R package to add missing taxa to complete phylogenies. Taxonomic information
+is used to add such taxa. The input will often be a molecular phylogeny, or otherwise
+"accepted" phylogeny. Optionally, named clades can be tracked through the addition process,
+and optionally the absolute diversification rates of these named clades can be tracked
+to determine their sensitivity to missing taxa.
