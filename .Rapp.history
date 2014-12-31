@@ -1,3 +1,21 @@
+str(rawResults,2)
+packageVersion("geiger")
+packageVersion("ape")
+packageVersion("phylobase")
+install_github("ecoPDcorr",username="eliotmiller")
+packageVersion("phylobase")
+install.packages("phylobase")
+packageVersion("phylobase")
+tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
+#
+sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
+#
+cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)#
+#
+rawResults <- metricsNnulls(tree, cdm)
+?getNode
+ls()
+test
 library(metricTester)
 metricsNnulls
 ?metricsNnulls
@@ -356,56 +374,52 @@ args <- commandArgs(TRUE)
 args
 library(devtools)
 load_all()
-library(phytools)
-data(bird.families)
-dummy.frame <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))
-dummy.frame
-getMRCAs(bird.families, dummy.frame)
-plot(bird.families)
-temp <- c()#
-temp[1] <- length(bird.families$tip.label) + 1#
-names(temp) <- "root"#
+?divRateSensitivyt
+?divRateSensitivity
+?help
+packageVersion("devtools")
+devtools::help(divRateSensitivyt)
+utils::help(data)
+data(bird.families)#
+bird.families <- multi2di(bird.families)#
 #'#
-#' #create a data frame of all taxa from the phylogeny, and make up clade memberships#
-#' #for each. note that the names on this data frame differ from "groupings" in other#
-#' #functions#
-dummy.frame <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
+#' #create a data frame of all taxa from the phylogeny, and make up species groups#
+#' #for each.#
+dummyGroups <- data.frame(species=bird.families$tip.label, #
+ group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
 rep("oscine", 20)))#
+#' #
+#' #now make up a few passerine taxa that are missing and add these into the dummy frame#
+ toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
+group=c(rep("oscine", 2), rep("basalOscine", 2)))#
+groupsDF <- rbind(dummyGroups, toAdd)#
 #'#
-#' #use the function getMRCAs() to determine the nodes subtending these named clades#
-nodes <- getMRCAs(bird.families, dummy.frame)#
-#' #unlist the results and append to the root node defined above#
-nodes <- append(temp, nodes)#
+#' #these groups were actually monophyletic. but make a slightly more detailed clade#
+#' #membership frame to see how one would be used. note that it doesn't include the#
+#' #missing taxa, and taxonomy does not exactly follow modern understanding#
+cladesDF <- data.frame(species=bird.families$tip.label, #
+clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
+rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
 #'#
-#' #use the function. note the effect of including a root edge or not#
-temp1 <- extractClade(bird.families, nodes)
-temp2 <- extractClade(bird.families, nodes, root.edge=1)
-temp1
-plot(temp1$oscine, root.edge=TRUE)
-plot(temp1$oscine, root.edge=TRUE)
-plot(temp2$oscine, root.edge=TRUE)
-taxaNumbers(tree, nodes)
-taxaNumbers(bird.families, nodes)
-taxaNumbers(bird.families, unlist(nodes))
-nodes
-bird.families
-singleSpeciesTree(bird.families, "Rheidae")
-plot(singleSpeciesTree(bird.families, "Rheidae"))
-test <- singleSpeciesTree(bird.families, "Rheidae")
-str(test)
-test <- singleSpeciesTree(bird.families, 1)
+#' #examples of changing the from.node argument. you can plot or write these trees out to#
+#' #better see what the differences are#
+test <- divRateSensitivity(tree=bird.families, groupings=groupsDF, from.node="crown", #
+clade.membership=cladesDF, crown.can.move=TRUE, calc.from.crown=TRUE, epsilon=0,#
+no.trees=10)
+load_all()
+test <- divRateSensitivity(tree=bird.families, groupings=groupsDF, from.node="crown", #
+clade.membership=cladesDF, crown.can.move=TRUE, calc.from.crown=TRUE, epsilon=0,#
+no.trees=10)
 test
-test <- singleSpeciesTree(bird.families, 10)
-test
-tree <- singleSpeciesTree(bird.families, "Rheidae")
-tree
-data(input.tre)
-data("input.tree")
-?data
-help(data)
-?load_data
-load_data(input.tre)
-load_data("input.tre")
+class(test)
+barplot(test)
+barplot(t(Test))
+barplot(t(test))
+check()
+document()
+document()
+document()
+check()
+Sys.setenv(PATH=paste(Sys.getenv("PATH"),"/usr/texbin",sep=":"))
+check()
+install_github("addTaxa", username="eliotmiller")
