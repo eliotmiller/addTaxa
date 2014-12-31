@@ -1,0 +1,57 @@
+#' Determine number of taxa that descend from a list or vector of nodes
+#'
+#' Given a tree and a vector or list of nodes, this function determines the number of taxa
+#' that descend from each node.
+#'
+#' @param tree An ape-style phylogenetic tree.
+#' @param nodes A named list or vector of node numbers that subtend the clade in question
+#' to extract. Can extract and create single species trees with appropriate branch length.
+#' The input vector or list must have names!
+#' @param root.edge Default is 0, meaning that no stem is left below the node from which
+#' the subclade is extracted. If root.edge is 1, then a root edge (stem) is also included
+#' with the extracted clade.
+#' 
+#' @details Given a named list or vector of node numbers that subtend one or more clades,
+#' extracts those clades and returns a list of trees. The nodes provided must have names,
+#' though the tree itself does not need to have named nodes. This is because the output
+#' trees are provided with these names, which are used in further downstream analyses. 
+#' If the node provided relates to a tip, then the tree that is returned contains the 
+#' stem length from the ancestor of that species to the tip in question. 
+#'
+#' @return A named list of trees.
+#'
+#' @export
+#'
+#' @references Eliot Miller unpublished
+#'
+#' @examples
+#' #load a molecular tree up
+#' data(bird.families)
+#'
+#' #define a named vector of node numbers, including a root
+#' temp <- c()
+#' temp[1] <- length(bird.families$tip.label) + 1
+#' names(temp) <- "root"
+#'
+#' #create a data frame of all taxa from the phylogeny, and make up clade memberships
+#' #for each. note that the names on this data frame differ from "groupings" in other
+#' #functions
+#' dummy.frame <- data.frame(species=bird.families$tip.label, 
+#' clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), 
+#' rep("oscine", 20)))
+#'
+#' #use the function getMRCAs() to determine the nodes subtending these named clades
+#' nodes <- getMRCAs(bird.families, dummy.frame)
+#' #unlist the results and append to the root node defined above
+#' nodes <- append(temp, nodes)
+#'
+#' #use the function.
+#' taxaNumbers(bird.families, nodes)
+
+taxaNumbers <- function(tree, mrca.nodes)
+{
+	mrca.nodes <- unlist(mrca.nodes)
+	trees <- extractClade(tree, mrca.nodes)
+	results <- lapply(trees, function(x) length(x$tip.label))
+	results
+}
