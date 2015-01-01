@@ -121,6 +121,16 @@ randomlyAddTaxa <- function(tree, groupings, from.node, no.trees, clade.membersh
 	#use identify missing to figure out which taxa are not in the input tree
 	possGroupings <- identifyMissing(tree, groupings, print.to.screen)
 
+	#add a check to ensure that all missing species are included in a taxonomic group that
+	#is included in the input tree
+	inTree <- groupings[!(groupings$species %in% possGroupings$species),]
+	inTree <- unique(inTree$group)
+
+	if(length(setdiff(unique(possGroupings$group), inTree)) > 0)
+	{
+		stop("All missing species must be part of a taxonomic group in the input tree")
+	}
+
 	#use dangerList() to figure out who cannot be bound to stemwards
 	problemTaxa <- dangerList(tree, clade.membership, crown.can.move, print.to.screen)
 

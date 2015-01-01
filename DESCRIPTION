@@ -6,7 +6,7 @@ Date: 2014-12-31
 Author: Eliot Miller
 Maintainer: Eliot Miller <eliot.isaac@gmail.com>
 Description: add missing taxa based on taxonomic information
-License: GPL-2 | GPL-3
+License: GPL-3
 Depends:
     R (>= 3.1.1),
     ape,
@@ -14,5 +14,4 @@ Depends:
     phytools
 Suggests:
     testthat
-License: GPL-3
 LazyData: true
