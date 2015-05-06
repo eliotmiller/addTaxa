@@ -1,3 +1,42 @@
+?fastAnc
+library(metricTester)
+?summaries
+library(dplyr)#
+library(geiger)#
+library(picante)#
+#
+#simulate tree with birth-death process#
+tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
+#
+sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
+#
+cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)#
+#
+rawResults <- metricsNnulls(tree, cdm)#
+#
+results <- reduceRandomizations(rawResults)
+log(1)
+log(0.5)
+e
+ln(e)
+library(metricTester)
+?summaries
+tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
+#
+sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
+#
+cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)#
+#
+rawResults <- metricsNnulls(tree, cdm)
+library(devtools)
+install_github("metricTester", username="eliotmiller")
+tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
+#
+sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
+#
+cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)#
+#
+rawResults <- metricsNnulls(tree, cdm)
 str(rawResults,2)
 packageVersion("geiger")
 packageVersion("ape")
@@ -373,53 +412,12 @@ c(i,j)
 args <- commandArgs(TRUE)
 args
 library(devtools)
-load_all()
-?divRateSensitivyt
-?divRateSensitivity
-?help
-packageVersion("devtools")
-devtools::help(divRateSensitivyt)
-utils::help(data)
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#'#
-#' #create a data frame of all taxa from the phylogeny, and make up species groups#
-#' #for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
- group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
-#' #
-#' #now make up a few passerine taxa that are missing and add these into the dummy frame#
- toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2)))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#'#
-#' #these groups were actually monophyletic. but make a slightly more detailed clade#
-#' #membership frame to see how one would be used. note that it doesn't include the#
-#' #missing taxa, and taxonomy does not exactly follow modern understanding#
-cladesDF <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
-rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
-#'#
-#' #examples of changing the from.node argument. you can plot or write these trees out to#
-#' #better see what the differences are#
-test <- divRateSensitivity(tree=bird.families, groupings=groupsDF, from.node="crown", #
-clade.membership=cladesDF, crown.can.move=TRUE, calc.from.crown=TRUE, epsilon=0,#
-no.trees=10)
-load_all()
-test <- divRateSensitivity(tree=bird.families, groupings=groupsDF, from.node="crown", #
-clade.membership=cladesDF, crown.can.move=TRUE, calc.from.crown=TRUE, epsilon=0,#
-no.trees=10)
-test
-class(test)
-barplot(test)
-barplot(t(Test))
-barplot(t(test))
-check()
-document()
-document()
-document()
-check()
-Sys.setenv(PATH=paste(Sys.getenv("PATH"),"/usr/texbin",sep=":"))
-check()
 install_github("addTaxa", username="eliotmiller")
+q()
+library(addTaxa)
+?randomlyAddTaxa
+library(devtools)
+?check
+load_all()
+Sys.which("pdflatexs.getenv("PATH")
+Sys.which("pdflatex")
