@@ -1,423 +1,424 @@
-?fastAnc
+6.5*0.9
+6.5-6.5*.1
+5.85*0.12
+46*0.702
+46*0.702/5
+2.5*1.027/5
+27*2.5/5
+1.0952+0.0135+0.064584
+128*5
+640/12
+2825/30
+95*2.6
+315-149
+1182*0.25
+13-2
+1181 - 295.5 + (30*12) + (2885/10 * 2.5) + 175
+(2885/10 * 2.5)
+(2885/30 * 2.5)
+(2885/30 * 2.5) + 50 + 4324
+4615-2142
+11/12
 library(metricTester)
-?summaries
-library(dplyr)#
-library(geiger)#
-library(picante)#
-#
-#simulate tree with birth-death process#
+?metricsNnulls
 tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
 #
 sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
 #
-cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)#
+cdm <- simulateComm(tree, richness.vector=10:25, abundances=sim.abundances)#
 #
-rawResults <- metricsNnulls(tree, cdm)#
-#
-results <- reduceRandomizations(rawResults)
-log(1)
-log(0.5)
-e
-ln(e)
-library(metricTester)
-?summaries
-tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
-#
-sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
-#
-cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)#
-#
-rawResults <- metricsNnulls(tree, cdm)
-library(devtools)
-install_github("metricTester", username="eliotmiller")
-tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
-#
-sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
-#
-cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)#
-#
-rawResults <- metricsNnulls(tree, cdm)
+rawResults <- metricsNnulls(tree, cdm, randomizations=3, cores=3, cluster=FALSE,#
+	nulls=list("richness"=metricTester:::my_richnessNull,#
+	"frequency"=metricTester:::my_frequency))
 str(rawResults,2)
-packageVersion("geiger")
-packageVersion("ape")
-packageVersion("phylobase")
-install_github("ecoPDcorr",username="eliotmiller")
-packageVersion("phylobase")
-install.packages("phylobase")
-packageVersion("phylobase")
+rawResults[[1]]
 tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
 #
 sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
 #
-cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)#
+cdm <- simulateComm(tree, richness.vector=10:25, abundances=sim.abundances)#
 #
-rawResults <- metricsNnulls(tree, cdm)
-?getNode
-ls()
-test
-library(metricTester)
-metricsNnulls
-?metricsNnulls
-tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
-#
-sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
-#
-cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)#
-#
-rawResults <- metricsNnulls(tree, cdm, randomizations=3, cores=1)
-packageVersion("phylobase")
-tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
-#
-sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
-#
-cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)#
-#
-rawResults <- metricsNnulls(tree, cdm, randomizations=3, cores=1)
-install.packages("phylobase")
-library(metricTester)
-library(ecoPD)
-library(ecoPDcorr)
-library(metricTester)
-?simulateComm
-tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
-#
-sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
-#
-cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)
-cdm
-ecoPD.cdm <- suppressWarnings(phylo4com(tree, t(cdm)))
-ecoPD.cdm
-?getNode
-ls()
-library(phylobase)
-packageVersion("phylobase")
-?getNode
-data(geospiza)#
-  nodeLabels(geospiza) <- LETTERS[1:nNodes(geospiza)]#
-  plot(as(geospiza, "phylo4"), show.node.label=TRUE)#
-  getNode(geospiza, 18)
-getNode(geospiza, "D")
-install.packages("phylobase")
-?getNode
-data(geospiza)#
-  nodeLabels(geospiza) <- LETTERS[1:nNodes(geospiza)]#
-  plot(as(geospiza, "phylo4"), show.node.label=TRUE)#
-  getNode(geospiza, 18)
-library(phylobase)
-data(geospiza)#
-  nodeLabels(geospiza) <- LETTERS[1:nNodes(geospiza)]#
-  plot(as(geospiza, "phylo4"), show.node.label=TRUE)#
-  getNode(geospiza, 18)
-install.packages("ecoPD")
-library(ecoPDcorr)
-?pae
-pae(weeds)
-packageVersion(phylobase)
-?phylo4com
-data(weeds.data)#
-  data(weeds.tree)#
-  phylo4com(weeds.tree, weeds.data$cover, weeds.data$plot,#
-    weeds.data$taxa)
-silly <- phylo4com(weeds.tree, weeds.data$cover, weeds.data$plot,#
-+     weeds.data$taxa)
-phylo4com(weeds.tree, weeds.data$cover, weeds.data$plot,#
-    weeds.data$taxa)
-phylo4com(weeds.tree, weeds.data$cover, weeds.data$plot,#
-    weeds.data$taxa)->st
-pae(st)
-library(metricTester)
-?metricsNnulls
-metricsNnulls
-?prepDat
-?prepData
-library(geiger)#
+rawResults <- metricsNnulls(tree, cdm, randomizations=3, cores=3, cluster=TRUE,#
+	nulls=list("richness"=metricTester:::my_richnessNull,#
+	"frequency"=metricTester:::my_frequency))
+rawResults[[1]]
+?foreach
+yes
+library(caper)
+?pgls
+?corMartins
+library(ape)
+?corMartins
+38.74+41.68+45.83
+300*12
+library(ape)
+?bdtree
+library(geiger)
+sim.bdtree(n=50, stop="taxa")
+sim.bdtree(n=50, stop="taxa")->tree
+tree
+plot(tree)
+str(tree)
+hist(tree$edge.length)
+hist(tree$edge.length, breaks=10)
+hist(tree$edge.length, breaks=20)
+257*12
+68*12
+96*12
+1152+3085
+log(10)
+exp(log(10))
+3785/750
+128/12
+2/3/1
+128*5
+128*5/12
+library(geiger)
+256.77+95/80
+256.77+95.80
+library(caper)#
+library(dplyr)#
 library(picante)#
-#
-#simulate tree with birth-death process#
-tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
-#
-sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
-#
-cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)#
-#
-prepped <- prepData(tree, cdm)
-prepped
-metricsNnulls
-ls()
-prepped
-metricsNnulls
-calcMetrics(prepped)
-warnings()
-calcMetrics
-debug(calcMetrics)
-calcMetrics(prepped)
-?checkMetrics
-checkMetrics(defineMetrics())
-debug(calcMetrics)
-calcMetrics(prepped)
-getNode
-ecoPDcorr
-?pae
-pae(weeds)
-metrics <- checkMetrics(metrics)
-cdm
-prepped <- prepData(tree, cdm)
-prepped
-results <- calcMetrics(prepped)
-?debug
-undebug(calcMetrics)
-checkMetrics()
-checkMetrics(x)
-checkMetrics(metrics)
-checkMetrics(NULL)
-prepped
-metricTester::naw_mpd(prepped)
-metricTester:::naw_mpd(prepped)
-metricTester:::Haed(prepped)
-metricTester:::my_PD_Cadotte(prepped)
-metricTester:::Eed(prepped)
-warnings()
-metricTester:::Hed(prepped)
-?eed
-aed(weeds)
-haed(weeds)
-ls
-ls()
-class(st)
-pae(st)
-haed(st)
-metricTester:::Hed(prepped)
-hed(st)
-hed
-library(ecoPDcorr)
-?hed
-hed(weeds)
-library(metricTester)
-packageVersion("phylobase")
-tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=100)#
-#
-system.time(multiLinkerCL(tree=tree, arena.length=316, mean.log.individuals=4, #
- 	length.parameter=1000, sd.parameter=40, max.distance=20, proportion.killed=0.2, #
-	competition.iterations=60, no.quadrats=20, quadrat.length=sqrt(1000), #
-	concat.by="richness", randomizations=1000, cores=8, iterations=10, prefix="test2"))
-library(devtools)
-install_github("metricTester", username="eliotmiller")
+library(phytools)#
+library(candisc)#
+library(geomorph)#
+library(geiger)#
+library(plotrix)#
+library(simpleFDis)#
+library(fpc)#
 library(metricTester)#
+library(convevol)
+load("/Users/eliotmiller/Documents/Writing and Other Work/Post-doc Work/Meliphagidae ecomorphology/outputs/ecomorphology20Sep2015.RData")
+ls()
+head(morphoResults)
+head(results)
+dim(results)
+results$morphoSESnawMPDdispersal
+results$morphoSESnawMPDdispersal[results$morphoSESnawMPDdispersal < -1.96]
+results$morphoSESnawMPDdispersal[results$morphoSESnawMPDdispersal > 1.96]
+results$morphoSESnawMPDdispersal[results$morphoSESnawMPDdispersal <= -1.96]
+results$morphoSESinterMPDdispersal[results$morphoSESnawMPDdispersal <= -1.96]
+results$morphoSESinterMPDdispersal[results$morphoSESnawMPDdispersal >= 1.96]
+results$morphoSESinterMPDdispersal[results$morphoSESinterMPDdispersal <= -1.96]
+results$morphoSESinterMPDdispersal[results$morphoSESinterMPDdispersal >= 1.96]
+length(results$morphoSESinterMPDdispersal[results$morphoSESinterMPDdispersal >= 1.96])
+hist(results$morphoSESinterMPDdispersal)
+hist(results$morphoSESnawMPDdispersal)
+hist(results$morphoSESnawMPDrichness)
+results$morphoSESinterMPDrichness[results$morphoSESinterMPDrichness >= 1.96]
+results$morphoSESinterMPDrichness[results$morphoSESinterMPDrichness <= -1.96]
+results$morphoSESnawMPDrichness[results$morphoSESnawMPDrichness <= -1.96]
+results$morphoSESnawMPDrichness[results$morphoSESnawMPDrichness >= 1.96]
+head(results)
+summary(lm(results$morphoSESinterMPDdispersal~results$bio1mean))
+summary(lm(results$morphoSESnawMPDdispersal~results$bio1mean))
+plot(results$morphoSESnawMPDdispersal~results$bio1mea)
+plot(results$morphoSESnawMPDdispersal~results$bio1mean)
+plot(results$genSESnawMPDdispersal~results$bio1mean)
+plot(results$ecolSESnawMPDdispersal~results$bio1mean)
+plot(results$genSESnawMPDrichness~results$bio1mean)
+plot(results$genSESnawMPDrichness~results$bio12mean)
+plot(results$genSESnawMPDrichness~log10(results$bio12mean))
+plot(results$genSESnawMPDdispersal~log10(results$bio12mean))
+plot(results$morphoSESnawMPDdispersal~results$bio1mean)
+summary(lm(results$morphoSESinterMPDdispersal~log10(results$bio12mean)))
+summary(lm(results$morphoSESnawMPDdispersal~log10(results$bio12mean)))
+summary(lm(results$morphoSESnawMPDrichness~log10(results$bio12mean)))
+summary(lm(results$morphoSESinterMPDrichness~log10(results$bio12mean)))
+plot(results$morphoSESinterMPDrichness~log10(results$bio12mean))
+results$ecolSESnawMPDdispersal[results$ecolSESnawMPDdispersal <= -1.96]
+length(results$ecolSESnawMPDdispersal[results$ecolSESnawMPDdispersal <= -1.96])
+length(results$ecolSESnawMPDdispersal[results$ecolSESnawMPDdispersal >= 1.96])
+length(results$ecolSESinterMPDdispersal[results$ecolSESinterPDdispersal >= 1.96])
+length(results$ecolSESinterMPDdispersal[results$ecolSESinterPDdispersal <= -1.96])
+hist(results$ecolSESinterMPDdispersal)
+length(results$ecolSESinterMPDdispersal[results$ecolSESinterMPDdispersal >= 1.96])
+length(results$ecolSESinterMPDdispersal[results$ecolSESinterMPDdispersal <= -1.96])
+hist(results$ecolSESinterMPDdispersal)
+length(results$ecolSESinterMPDrichness[results$ecolSESinterMPDrichness <= -1.96])
+length(results$ecolSESinterMPDrichness[results$ecolSESinterMPDrichness >= 1.96])
+length(results$ecolSESnawMPDrichness[results$ecolSESnawMPDrichness >= 1.96])
+length(results$ecolSESnawMPDrichness[results$ecolSESnawMPDrichness <= -1.96])
+77/695
+summary(lm(results$ecolSESnawMPDdispersal~results$bio1man))
+summary(lm(results$ecolSESnawMPDdispersal~results$bio1mean))
+summary(lm(results$ecolSESinterMPDdispersal~results$bio1mean))
+summary(lm(results$ecolSESinterMPDdispersal~log10(results$bio12mean)))
+summary(lm(results$ecolSESnawMPDdispersal~log10(results$bio12mean)))
+summary(lm(results$ecolSESinterMPDdispersal~log10(results$bio12mean)))
+head(results)
+summary(lm(results$morphoSESnawMPDdispersal~results$genSESnawMPDdispersal))
+summary(lm(results$morphoSESinterMPDdispersal~results$genSESinterMPDdispersal))
+summary(lm(results$ecolSESinterMPDdispersal~results$genSESinterMPDdispersal))
+summary(lm(results$ecolSESnawMPDdispersal~results$genSESnawMPDdispersal))
+head(morphoResults)
+mean(morphoResults$ses.dispersal.naw.morpho.field)
+wilcoxon.test(morphoResults$ses.dispersal.naw.morpho.field)
+wilcox.test
+wilcox.test(morphoResults$ses.dispersal.naw.morpho.field)
+wilcox.test(morphoResults$ses.dispersal.naw.phylo.field)
+mean(morphoResults$ses.dispersal.naw.phylo.field)
+mean(morphoResults$ses.dispersal.inter.phylo.field)
+mean(morphoResults$ses.dispersal.naw.morpho.field)
+mean(morphoResults$ses.richness.naw.phylo.field)
+mean(morphoResults$ses.richness.inter.phylo.field)
+mean(morphoResults$ses.dispersal.naw.morpho.field)
+sort(morphoResults$ses.dispersal.naw.morpho.field)
+wilcox.test(morphoResults$ses.dispersal.naw.morpho.field)
+wilcox.test(morphoResults$ses.dispersal.inter.morpho.field)
+mean(morphoResults$ses.dispersal.inter.morpho.field)
+sort(morphoResults$ses.dispersal.inter.morpho.field)
+sort(morphoResults$ses.dispersal.naw.ecol.field)
+sort(ecolResults$ses.dispersal.naw.ecol.field)
+mean(ecolResults$ses.dispersal.naw.ecol.field)
+wilcox.test(ecolResults$ses.dispersal.naw.ecol.field)
+wilcox.test(ecolResults$ses.dispersal.inter.ecol.field)
+mean(ecolResults$ses.dispersal.inter.ecol.field)
+sort(ecolResults$ses.dispersal.inter.ecol.field)
+#make some comparative caper objects#
+morphoCaper <- comparative.data(phy=morphoTree, data=morphoResults, names.col=species)#
+ecolCaper <- comparative.data(phy=ecolTree, data=ecolResults, names.col=species)#
 #
-tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=100)#
+#run pgls regressions to test the main prediction that trait diversity does not mirror#
+#phylogenetic diversity (use both standardized and unstandardized and abundance-weighted#
+#and unweighted versions)#
+nawTestMorpho <- pgls(naw.morpho.field~naw.phylo.field, data=morphoCaper)#
+interTestMorpho <- pgls(inter.morpho.field~inter.phylo.field, data=morphoCaper)#
+sesNawTestMorpho <- pgls(ses.dispersal.naw.morpho.field~ses.dispersal.naw.phylo.field,#
+	data=morphoCaper)#
+sesInterTestMorpho <- pgls(ses.dispersal.inter.morpho.field~#
+	ses.dispersal.inter.phylo.field, data=morphoCaper)#
 #
-system.time(multiLinker(tree=tree, arena.length=316, mean.log.individuals=4, #
- 	length.parameter=1000, sd.parameter=40, max.distance=20, proportion.killed=0.2, #
-	competition.iterations=60, no.quadrats=20, quadrat.length=sqrt(1000), #
-	concat.by="richness", randomizations=1000, cores=8, iterations=10, prefix="test2"))
-library(ecoPDcorr)
+nawTestEcol <- pgls(naw.ecol.field~naw.phylo.field, data=ecolCaper)#
+interTestEcol <- pgls(inter.ecol.field~inter.phylo.field, data=ecolCaper)#
+sesNawTestEcol <- pgls(ses.dispersal.naw.ecol.field~ses.dispersal.naw.phylo.field,#
+	data=ecolCaper)#
+sesInterTestEcol <- pgls(ses.dispersal.inter.ecol.field~ses.dispersal.inter.phylo.field,#
+	data=ecolCaper)
+nawTestMorpho
+summary(nawTestMorpho)
+summary(interTestMorpho)
+summary(sesNawTestMorpho)
+summary(sesInterTestMorpho)
+summary(sesNawTestEcol)
+summary(sesInterTestEcol)
+head(morphoResults)
+test <- pgls(naw.ecol.field~naw.phylo.field, data=ecolResults)
+test <- pgls(naw.ecol.field~naw.phylo.field, data=ecolCaper)
+summary(test)
+plot(test)
+head(ecolResults)
+plot(ecolResults$naw.ecol.field~ecolResults$naw.phylo.field)
+runif(1)
+runif(1)
+runif(1)
+runif(1)
+runif(1)
+runif(1)
+runif(1)
+runif(1)
+runif(1)
+uniform
+4-runif(n=1,min=0,max=4)
+4-runif(n=1,min=0,max=4)
+4-runif(n=1,min=0,max=4)
+4-runif(n=1,min=0,max=4)
+4-runif(n=1,min=0,max=4)
+4-runif(n=1,min=0,max=4)
+4-runif(n=1,min=0,max=4)
+4-runif(n=1,min=0,max=4)
+4-runif(n=1,min=0,max=4)
+4-runif(n=1,min=0,max=4)
+4-runif(n=1,min=0,max=4)
 library(devtools)
-install_github("ecoPDcorr", username="eliotmiller")
-library(ecoPDcorr)
-packageVersion("phylobase")
-install.packages("phylobase")
-library(ecoPDcorr)
-library(ecoPDcorr)#
-#
-hed(weeds)
-pae(weeds)
-iac(weeds)
-haed(weeds)
-eaed(weeds)
-eed(weeds)
-aed
-aed(weeds)
-hed(weeds)
-eed(weeds)
-aed(weeds)
-pae(weeds)
-iac(weeds)
-haed(weeds)
-eaed(weeds)
-eed(weeds)
-hed(weeds)
-simpson(weeds)
-simpson(weeds, method="phylogenetic")
-pd(weeds)
-install.packages("phylobase")
-library(ecoPDcorr)
-hed(weeds)
-eaed(weeds)
-hed(weeds)
-ecoPD(weeds)
-ecoPD(weeds, method="poly")
-ecoPDcorr:::ecoPD(weeds, method="poly")
-library(devtools)
-install_github("ecoPDcorr", username="eliotmiller")
-library(ecoPDcorr)
-hed(weeds)
-eaed(weeds)
-library(methods)
-hed(weeds)
-remove.packages("ecoPD")
-library(metricTester)
-pae(weeds)
-hed(weeds)
-aed(weeds)
-packageVersion("ecoPDcorr")
-packageVersion("phylobase")
-library(metricTeser)
-library(metricTester)
-?metricsNnullsCL()
-tree <- sim.bdtree(b=0.1, d=0, stop="taxa", n=50)#
-#
-sim.abundances <- round(rlnorm(5000, meanlog=2, sdlog=1)) + 1#
-#
-cdm <- simulateComm(tree, min.rich=10, max.rich=25, abundances=sim.abundances)#
-#
-system.time(rawResults <- metricsNnulls(tree, cdm, randomizations=3, cores=1))
-system.time(rawResults <- metricsNnulls(tree, cdm, randomizations=3, cores=3))
-system.time(rawResults <- metricsNnullsCL(tree, cdm, randomizations=3, cores=1))
-metricsNnullsCL
-system.time(rawResults <- metricsNnullsCL(tree, cdm, randomizations=3, cores=3))
-library(Hmisc)
-?weighted.mean
-?rank
-a <- c(10,10,10,8,7,6)
-a
-b <- c("species1","species2","species3","sp4","sp5","sp6")
-names(a)<-b
-a
-rank(a)
-(1/8)/2.5
-16*6
-96*0.05
-library(phytools)
-?fastAnc
-5000*0.06
-7850*0.06
-51.17*6
-function1 <- function(arg1)#
-{#
-	print(arg1)#
-}#
-#
-function2 <- function(arg2, ...)#
-{#
-	function1()#
-	print(arg2)#
-}
-function1("test")
-function2("temp")
-function1 <- function(arg1=NULL)#
-{#
-	print(arg1)#
-}#
-#
-function2 <- function(arg2, ...)#
-{#
-	function1()#
-	print(arg2)#
-}
-function2("temp")
-function2(arg2="temp", arg1="test")
-function1 <- function(arg1=NULL)#
-{#
-	print(arg1)#
-}#
-#
-function2 <- function(arg2, ...)#
-{#
-	function1(arg1)#
-	print(arg2)#
-}
-function2(arg2="temp", arg1="test")
-?inherits
-function1 <- function(arg1=NULL)#
-{#
-	if(is.null(arg1))#
-	{#
-		print("arg1 was null")#
-	}#
-	else#
-	{#
-		print(arg1)#
-	}#
-}
-function1()
-function1("test")
-function2 <- function(arg2, arg1)#
-{#
-	function1()#
-	print(arg2)#
-}
-function2(arg2="test")
-function2(arg2="test", arg1="test2")
-function2 <- function(arg2, arg1)#
-{#
-	function1(arg1)#
-	print(arg2)#
-}
-function2()
-function2 <- function(arg2, arg1)#
-{#
-	if(missing(arg1))#
-	{#
-		arg1 <- NULL#
-	}#
-	function1(arg1)#
-	print(arg2)#
-}
-function2(arg2="test")
-function2(arg2="test", arg1=test2)
-function2(arg2="test", arg1="test3")
-library(devtools)
-install_github("metricTester", username="eliotmiller")
-library(metricTester)
-multiLinker(no.taxa=100, arena.length=316, mean.log.individuals=3, #
- 	length.parameter=1000, sd.parameter=40, max.distance=20, proportion.killed=0.2, #
-	competition.iterations=60, no.quadrats=20, quadrat.length=sqrt(1000), #
-	concat.by="quadrat", randomizations=3, cores=3, cluster=FALSE, iterations=1,#
-	prefix="lewis5",#
-	metrics=list("richness"=my_richness, "NAW_MPD"=naw_mpd, "inter_MPD"=inter_mpd, #
-	"intra_MPD"=intra_mpd, "complete_MPD"=complete_mpd, "NAW_MNTD"=naw_mntd,#
-	"AW_MNTD"=aw_mntd, "PSE"=my_pse, "PAE"=PAE, "IAC"=IAC, "Haed"=Haed, "Eaed"=Eaed,#
-	"Eed"=Eed, "Hed"=Hed, "PD"=my_PD, "PD_Cadotte"=my_PD_Cadotte),#
-	nulls=list("twoX"=my_2x, "threeX"=my_3x, "oneS"=my_1s,#
-	"regional"=my_regional, "richness"=my_richnessNull, "frequency"=my_frequency,#
-	"independent_swap"=my_IS, "trial_swap"=my_TS))
-my_richness
-metricTester::my_richness
-metricTester:::my_richness
-multiLinker(no.taxa=100, arena.length=316, mean.log.individuals=3, #
- 	length.parameter=1000, sd.parameter=40, max.distance=20, proportion.killed=0.2, #
-	competition.iterations=60, no.quadrats=20, quadrat.length=sqrt(1000), #
-	concat.by="quadrat", randomizations=3, cores=3, cluster=FALSE, iterations=1,#
-	prefix="lewis5",#
-	metrics=list("richness"=metricTester:::my_richness, "NAW_MPD"=metricTester:::naw_mpd, "inter_MPD"=metricTester:::inter_mpd, #
-	"intra_MPD"=metricTester:::intra_mpd, "complete_MPD"=metricTester:::complete_mpd, "NAW_MNTD"=metricTester:::naw_mntd,#
-	"AW_MNTD"=metricTester:::aw_mntd, "PSE"=metricTester:::my_pse, "PAE"=metricTester:::PAE, "IAC"=metricTester:::IAC, "Haed"=metricTester:::Haed, "Eaed"=metricTester:::Eaed,#
-	"Eed"=metricTester:::Eed, "Hed"=metricTester:::Hed, "PD"=metricTester:::my_PD, "PD_Cadotte"=metricTester:::my_PD_Cadotte),#
-	nulls=list("twoX"=metricTester:::my_2x, "threeX"=metricTester:::my_3x, "oneS"=metricTester:::my_1s,#
-	"regional"=metricTester:::my_regional, "richness"=metricTester:::my_richnessNull, "frequency"=metricTester:::my_frequency,#
-	"independent_swap"=metricTester:::my_IS, "trial_swap"=metricTester:::my_TS))
-10/5
-191+14+40
-316^2
-316^2/10000
-i <- "input"#
-j <- "output"#
-cat(i,"\n",j)
-i <- "input"#
-j <- "output"#
-cat(i,j)
-i <- "input"#
-j <- "output"#
-c(i,j)
-args <- commandArgs(TRUE)
-args
-library(devtools)
-install_github("addTaxa", username="eliotmiller")
-q()
-library(addTaxa)
-?randomlyAddTaxa
-library(devtools)
-?check
 load_all()
-Sys.which("pdflatexs.getenv("PATH")
-Sys.which("pdflatex")
+?randomlyAddTaxa
+#load a molecular tree up. resolve polytomies#
+data(bird.families)#
+bird.families <- multi2di(bird.families)#
+#
+#create a data frame of all taxa from the phylogeny, and make up species groups#
+#for each.#
+dummyGroups <- data.frame(species=bird.families$tip.label,#
+group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13),#
+rep("oscine", 20)))#
+#
+#now make up a few passerine taxa that are missing and add these into the dummy frame#
+toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"),#
+group=c(rep("oscine", 2), rep("basalOscine", 2)))#
+groupsDF <- rbind(dummyGroups, toAdd)#
+#
+#these groups were actually monophyletic. but make a slightly more detailed clade#
+#membership frame to see how one would be used. note that it doesn't include the#
+#missing taxa, and taxonomy does not exactly follow modern understanding#
+cladesDF <- data.frame(species=bird.families$tip.label,#
+clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
+rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
+#
+#examples of changing the from.node argument. you can plot or write these trees out to#
+#better see what the differences are#
+crown <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF, from.node="randomly", branch.position="bd",#
+	no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE, print.to.screen=FALSE)
+plot(crown$trees[[1]])
+plot(crown$trees[[2]])
+plot(crown$trees[[3]])
+plot(crown$trees[[4]])
+plot(crown$trees[[5]])
+plot(crown$trees[[6]])
+plot(crown$trees[[7]])
+> crown <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF, from.node="randomly", branch.position="midpoint",#
+	no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE, print.to.screen=FALSE)
+crown <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF, from.node="randomly", branch.position="midpoint",#
+	no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE, print.to.screen=FALSE)
+plot(crown$trees[[1]])
+plot(crown$trees[[2]])
+plot(crown$trees[[3]])
+plot(crown$trees[[4]])
+plot(crown$trees[[5]])
+plot(crown$trees[[6]])
+crown <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF, from.node="randomly", branch.position="uniform",#
+	no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE, print.to.screen=FALSE)
+plot(crown$trees[[5]])
+plot(crown$trees[[1]])
+plot(crown$trees[[2]])
+plot(crown$trees[[3]])
+#load the tree and the taxonomic groupings file#
+tree <- read.tree("mast.tre")#
+allGroupings <- read.csv("hak_groupings_all.csv")#
+#
+#identify the nodes you are interested in. an acceptable way to do it is just by adding#
+#silly node labels, then doing it by hand. matching clades to those from figure 4 of#
+#"Hakeinae_figs_3Dec12.pdf"#
+#
+plot(tree, cex=0.3)#
+nodelabels(149:295, cex=0.3)#
+#
+#these are the nodes. note that clades 5 & 8 only have one species in molecular phylogeny#
+#so, we can't extract them by node in the same way#
+#
+nodes <- c(150, 155, 189, 207, 258, 107, 243, 287, 148)#
+#
+#name them#
+names(nodes) <- c("hakea/grevillea", "clade1", "clade2", "clade3", "clade4", "clade5",#
+	"clade6", "clade7", "clade8")#
+#
+#create a list of pruned trees with no root edges#
+pruned <- extractClade(tree, nodes)#
+#and another with a root edge#
+prunedRoot <- extractClade(tree, nodes, root.edge=1)#
+#find the observed diversification rates assuming no extinction#
+epsilon0_crown <- lapply(pruned, function(x) bd.ms(phy=x, crown=TRUE, epsilon=0))#
+epsilon0.9_crown <- lapply(pruned, function(x) bd.ms(phy=x, crown=TRUE, epsilon=0.9))#
+epsilon0_stem <- lapply(prunedRoot, function(x) bd.ms(phy=x, crown=FALSE, epsilon=0))#
+epsilon0.9_stem <- lapply(prunedRoot, function(x) bd.ms(phy=x, crown=FALSE, epsilon=0.9))#
+#
+#convert to data frame and bind together#
+epsilon0_crown <- as.data.frame(epsilon0_crown)#
+epsilon0.9_crown <- as.data.frame(epsilon0.9_crown)#
+epsilon0_stem <- as.data.frame(epsilon0_stem)#
+epsilon0.9_stem <- as.data.frame(epsilon0.9_stem)#
+#
+observed <- rbind(epsilon0_crown, epsilon0.9_crown, epsilon0_stem, epsilon0.9_stem)#
+row.names(observed) <- c("noAdd_epsilon0_crown", "noAdd_epsilon0.9_crown",#
+	"noAdd_epsilon0_stem", "noAdd_epsilon0.9_stem")#
+#
+#create a dataframe of named clades. start at 2 to skip the "root" tree of all species#
+species <- c()#
+clade <- c()#
+#
+for(i in 2:length(pruned))#
+{#
+	species <- append(species, pruned[[i]]$tip.label)#
+	clade <- append(clade, rep(names(pruned)[[i]], length(pruned[[i]]$tip.label)))#
+}#
+#
+namedClades <- data.frame(species, clade)
+#load the tree and the taxonomic groupings file#
+tree <- read.tree("mast.tre")#
+allGroupings <- read.csv("hak_groupings_all.csv")#
+#
+#identify the nodes you are interested in. an acceptable way to do it is just by adding#
+#silly node labels, then doing it by hand. matching clades to those from figure 4 of#
+#"Hakeinae_figs_3Dec12.pdf"#
+#
+plot(tree, cex=0.3)#
+nodelabels(149:295, cex=0.3)#
+#
+#these are the nodes. note that clades 5 & 8 only have one species in molecular phylogeny#
+#so, we can't extract them by node in the same way#
+#
+nodes <- c(150, 155, 189, 207, 258, 107, 243, 287, 148)#
+#
+#name them#
+names(nodes) <- c("hakea/grevillea", "clade1", "clade2", "clade3", "clade4", "clade5",#
+	"clade6", "clade7", "clade8")#
+#
+#create a list of pruned trees with no root edges#
+pruned <- extractClade(tree, nodes)#
+#and another with a root edge#
+prunedRoot <- extractClade(tree, nodes, root.edge=1)#
+#find the observed diversification rates assuming no extinction#
+epsilon0_crown <- lapply(pruned, function(x) bd.ms(phy=x, crown=TRUE, epsilon=0))#
+epsilon0.9_crown <- lapply(pruned, function(x) bd.ms(phy=x, crown=TRUE, epsilon=0.9))#
+epsilon0_stem <- lapply(prunedRoot, function(x) bd.ms(phy=x, crown=FALSE, epsilon=0))#
+epsilon0.9_stem <- lapply(prunedRoot, function(x) bd.ms(phy=x, crown=FALSE, epsilon=0.9))#
+#
+#convert to data frame and bind together#
+epsilon0_crown <- as.data.frame(epsilon0_crown)#
+epsilon0.9_crown <- as.data.frame(epsilon0.9_crown)#
+epsilon0_stem <- as.data.frame(epsilon0_stem)#
+epsilon0.9_stem <- as.data.frame(epsilon0.9_stem)#
+#
+observed <- rbind(epsilon0_crown, epsilon0.9_crown, epsilon0_stem, epsilon0.9_stem)#
+row.names(observed) <- c("noAdd_epsilon0_crown", "noAdd_epsilon0.9_crown",#
+	"noAdd_epsilon0_stem", "noAdd_epsilon0.9_stem")#
+#
+#create a dataframe of named clades. start at 2 to skip the "root" tree of all species#
+species <- c()#
+clade <- c()#
+#
+for(i in 2:length(pruned))#
+{#
+	species <- append(species, pruned[[i]]$tip.label)#
+	clade <- append(clade, rep(names(pruned)[[i]], length(pruned[[i]]$tip.label)))#
+}#
+#
+namedClades <- data.frame(species, clade)
+test <- randomlyAddTaxa(tree=tree, groupings=allGroupings, from.node="randomly", branch.position="midpoint", no.trees=1, clade.membership=namedClades, crown.can.move=TRUE, print.to.screen=FALSE)
+min(tree$edge.length)
+min(test$trees[[1]]$edge.length)
+test2 <- randomlyAddTaxa(tree=tree, groupings=allGroupings, from.node="randomly", branch.position="bd", no.trees=1, clade.membership=namedClades, crown.can.move=TRUE, print.to.screen=FALSE)
+min(test2$trees[[1]]$edge.length)
+plot(test2$trees[[1]])
+plot(test2$trees[[1]], cex=0.1)
+test2 <- randomlyAddTaxa(tree=tree, groupings=allGroupings, from.node="randomly", branch.position="uniform", no.trees=1, clade.membership=namedClades, crown.can.move=TRUE, print.to.screen=FALSE)
+min(test2$trees[[1]]$edge.length)
+plot(test2$trees[[1]]$edge.length)
+plot(test2$trees[[1]])
+1e-6
+load_all()
+test2 <- randomlyAddTaxa(tree=tree, groupings=allGroupings, from.node="randomly", branch.position="bd", no.trees=1, clade.membership=namedClades, crown.can.move=TRUE, print.to.screen=FALSE)
+min(test2$trees[[1]]$edge.length)
+test2 <- randomlyAddTaxa(tree=tree, groupings=allGroupings, from.node="randomly", branch.position="bd", no.trees=1, clade.membership=namedClades, crown.can.move=TRUE, print.to.screen=FALSE)
+min(test2$trees[[1]]$edge.length)
+test2 <- randomlyAddTaxa(tree=tree, groupings=allGroupings, from.node="randomly", branch.position="bd", no.trees=1, clade.membership=namedClades, crown.can.move=TRUE, print.to.screen=FALSE, optional.offset=1e-6)
+test2 <- randomlyAddTaxa(tree=tree, groupings=allGroupings, from.node="randomly", branch.position="bd", no.trees=1, clade.membership=namedClades, crown.can.move=TRUE, print.to.screen=FALSE, optional.offset=1e-6)
+branchScaler(tree$edge.length, 2)
+branchScaler(tree$edge.length, 2)
+branchScaler(tree$edge.length, 2)
+branchScaler(tree$edge.length, 20)
+branchScaler(tree$edge.length, 0)
+min(tree$edge.length)
+branchScaler(tree$edge.length, 0.25)
+min(branchScaler(tree$edge.length, 0.25))
+test2 <- randomlyAddTaxa(tree=tree, groupings=allGroupings, from.node="randomly", branch.position="bd", no.trees=1, clade.membership=namedClades, crown.can.move=TRUE, print.to.screen=FALSE, optional.offset=1e-12)
+min(test2$trees[[1]]$edge.length)
+load_all()
+document()
+?randomlyAddTaxa
+test2 <- randomlyAddTaxa(tree=tree, groupings=allGroupings, from.node="randomly", branch.position="bd", no.trees=1, clade.membership=namedClades, print.to.screen=FALSE, optional.offset=1e-12)
+load_all()
+document()
+?randomlyAddTaxa
+load_all()
+document()

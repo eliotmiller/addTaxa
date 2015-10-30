@@ -10,6 +10,22 @@
 #' @param from.node Whether species should be added in a "polytomy" with, "crown" (more 
 #' recently diverged), "stem" (previously diverged), or "randomly" crown-wards or
 #' stem-wards from the tip they are bound to.
+#' @param branch.position Once the algorithm has selected to which branch a species will be
+#' bound, this determines where on the branch that happens. Currently there are three
+#' options. The first, "midpoint", simple breaks the branch in half and binds the species
+#' there. The second, "uniform", will sample from a uniform distribution with a minimum of
+#' zero and a maximum of the full branch length. The third, "bd", is currently being
+#' developed and is not fully operational. For now, all it does is take the distribution
+#' of branches from the full tree and scale it to the branch in question, then sample from
+#' that. Thus, if there are lots of long branches on average in the phylogeny, the species
+#' being bound will tend to be bound closer to the subtending node. Since this is just
+#' based on the tree-wide distribution of branch lengths as opposed to the lengths in that
+#' "portion" of the tree, this is not currently recommended. Note that options 2 and 3
+#' (particularly "bd") mean that species can conceivably be added at the maximum distance
+#' possible from the tip, i.e. at the node subtending them. This would create branch
+#' lengths of zero. To avoid this, the argument "optional.offset" can be set to some small
+#' value, e.g. 1e-9.
+#' @param optional.offset Value to avoid polytomies (see above).
 #' @param no.trees The number of desired final trees with all missing species from 
 #' groupings added.
 #' @param clade.membership An optional data frame with first column = "species", second
@@ -67,7 +83,9 @@
 #'
 #' @export
 #'
-#' @references Eliot Miller unpublished
+#' @references Mast et al. 2015. Paraphyly changes understanding of timing and tempo of 
+#' diversification in subtribe Hakeinae (Proteaceae), a giant Australian plant radiation.
+#' American Journal of Botany.
 #'
 #' @examples
 #' #load a molecular tree up. resolve polytomies
@@ -102,8 +120,9 @@
 #'	from.node="polytomy", no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE, 
 #'	print.to.screen=FALSE)
 
-randomlyAddTaxa <- function(tree, groupings, from.node, no.trees, clade.membership,
-	crown.can.move, print.to.screen, file.name)
+randomlyAddTaxa <- function(tree, groupings, from.node="randomly",
+	branch.position="midpoint", optional.offset=0, no.trees, clade.membership,
+	crown.can.move=TRUE, print.to.screen=FALSE, file.name)
 {
 	#add a line to throw an error if from.node is not properly specified
 	if(from.node != "randomly" & from.node != "crown" & from.node != "stem" 
@@ -290,8 +309,43 @@ randomlyAddTaxa <- function(tree, groupings, from.node, no.trees, clade.membersh
 			#to this to maintain monophyly			
 			if(bigEnough == 0)
 			{
-				new.tree <- bind.tip(tree=new.tree, tip.label=possGroupings$species[j], 
-					where=bindingTo, position=parentDistance/2)
+				if(branch.position=="midpoint")
+				{
+					new.tree <- bind.tip(tree=new.tree,
+						tip.label=possGroupings$species[j], 
+						where=bindingTo, position=parentDistance/2)
+				}
+				else if(branch.position=="bd")
+				{
+					#scale the distribution of original branching times to the age from
+					#the parent node to the present. to avoid polytomies, it is useful to
+					#add a very small constant here. sample from the new distribution
+					newPositions <- branchScaler(input.vector=tree$edge.length,
+						max.age=parentDistance)
+					newPosition <- sample(newPositions, 1)
+					new.tree <- bind.tip(tree=new.tree,
+						tip.label=possGroupings$species[j], 
+						where=bindingTo, position=parentDistance-newPosition
+						 + optional.offset)
+				}
+				else if(branch.position=="uniform")
+				{
+					#scale the distribution of original branching times to the age from
+					#the parent node to the present. to avoid polytomies, it is useful to
+					#add a very small constant here. sample from the new distribution
+					newPositions <- branchScaler(input.vector=tree$edge.length,
+						max.age=parentDistance)
+					newPosition <- sample(newPositions, 1)
+					new.tree <- bind.tip(tree=new.tree,
+						tip.label=possGroupings$species[j], 
+						where=bindingTo,
+						position=parentDistance-runif(n=1, min=0, max=parentDistance)
+							+ optional.offset)
+				}
+				else
+				{
+					stop("Ensure arguments 'branch.position' and 'from.node' are properly specified")
+				}				
 			}
 
 			#bind new species directly to randomly selected species if "crown" is selected
@@ -299,8 +353,42 @@ randomlyAddTaxa <- function(tree, groupings, from.node, no.trees, clade.membersh
 			#selected species and its parent node
 			else if(bigEnough == 1 & from.nodeUsed == "crown")
 			{
-				new.tree <- bind.tip(tree=new.tree, tip.label=possGroupings$species[j], 
-					where=bindingTo, position=parentDistance/2)
+				if(branch.position=="midpoint")
+				{
+					new.tree <- bind.tip(tree=new.tree,
+						tip.label=possGroupings$species[j], 
+						where=bindingTo, position=parentDistance/2)
+				}
+				else if(branch.position=="bd")
+				{
+					#scale the distribution of original branching times to the age from
+					#the parent node to the present, then sample from it
+					newPositions <- branchScaler(input.vector=tree$edge.length,
+						max.age=parentDistance)
+					newPosition <- sample(newPositions, 1)
+					new.tree <- bind.tip(tree=new.tree,
+						tip.label=possGroupings$species[j], 
+						where=bindingTo, position=parentDistance-newPosition
+							+ optional.offset)
+				}
+				else if(branch.position=="uniform")
+				{
+					#scale the distribution of original branching times to the age from
+					#the parent node to the present. to avoid polytomies, it is useful to
+					#add a very small constant here. sample from the new distribution
+					newPositions <- branchScaler(input.vector=tree$edge.length,
+						max.age=parentDistance)
+					newPosition <- sample(newPositions, 1)
+					new.tree <- bind.tip(tree=new.tree,
+						tip.label=possGroupings$species[j], 
+						where=bindingTo, 
+						position=parentDistance-runif(n=1, min=0, max=parentDistance)
+							+ optional.offset)
+				}
+				else
+				{
+					stop("Ensure arguments 'branch.position' and 'from.node' are properly specified")
+				}				
 			}
 			
 			#if more than one species is present in group, and if "polytomy" is selected
@@ -313,13 +401,50 @@ randomlyAddTaxa <- function(tree, groupings, from.node, no.trees, clade.membersh
 
 			#bind new species to parent node if "stem" is selected. give it an additional
 			#branch length of half the distance to the grand parent node (phytools will
-			#go ahead and make it ultrametric)
+			#go ahead and make it ultrametric) if "midpoint" is selected, else let "bd"
+			#find it
 			else if(bigEnough == 1 & from.nodeUsed == "stem")
 			{
-				new.tree <- bind.tip(tree=new.tree, tip.label=possGroupings$species[j],
-					where=parent, position=grandparentDistance/2)
-				workAround <- write.tree(new.tree)
-				new.tree <- read.newick(text=workAround)
+				if(branch.position=="midpoint")
+				{
+					new.tree <- bind.tip(tree=new.tree,
+						tip.label=possGroupings$species[j],
+						where=parent, position=grandparentDistance/2)
+					workAround <- write.tree(new.tree)
+					new.tree <- read.newick(text=workAround)
+				}
+				else if(branch.position=="bd")
+				{
+					#scale the distribution of original branching times to the age between
+					#the grandparent and parent nodes, then sample from it
+					newPositions <- branchScaler(input.vector=tree$edge.length,
+						max.age=grandparentDistance)
+					newPosition <- sample(newPositions, 1)
+					new.tree <- bind.tip(tree=new.tree,
+						tip.label=possGroupings$species[j], 
+						where=parent, position=grandparentDistance-newPosition
+							+ optional.offset)
+					workAround <- write.tree(new.tree)
+					new.tree <- read.newick(text=workAround)
+				}
+				else if(branch.position=="uniform")
+				{
+					#scale the distribution of original branching times to the age from
+					#the parent node to the present. to avoid polytomies, it is useful to
+					#add a very small constant here. sample from the new distribution
+					newPositions <- branchScaler(input.vector=tree$edge.length,
+						max.age=parentDistance)
+					newPosition <- sample(newPositions, 1)
+					new.tree <- bind.tip(tree=new.tree,
+						tip.label=possGroupings$species[j], 
+						where=bindingTo,
+						position=parentDistance-runif(n=1, min=0, max=parentDistance)
+							+ optional.offset)
+				}
+				else
+				{
+					stop("Ensure arguments 'branch.position' and 'from.node' are properly specified")
+				}				
 			}
 		}		
 		#add the last version of new tree in as a new element in the list of random, 
