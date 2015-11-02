@@ -129,12 +129,17 @@ rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))
 #examples of changing the from.node argument. you can plot or write these trees out to
 #better see what the differences are
 crown <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF, from.node="crown",
-	no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE, print.to.screen=FALSE)
+	branch.position="midpoint", no.trees=10, clade.membership=cladesDF,
+	crown.can.move=TRUE, print.to.screen=FALSE)
 stem <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF, from.node="stem",
-	no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE, print.to.screen=FALSE)
+	branch.position="midpoint", no.trees=10, clade.membership=cladesDF,
+	crown.can.move=TRUE, print.to.screen=FALSE)
 polytomy <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,
-	from.node="polytomy", no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE,
-	print.to.screen=FALSE)
+	from.node="polytomy", branch.position="midpoint", no.trees=10,
+	clade.membership=cladesDF, crown.can.move=TRUE, print.to.screen=FALSE)
+randomly <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,
+	from.node="randomly", branch.position="midpoint", no.trees=10,
+	clade.membership=cladesDF, crown.can.move=TRUE, print.to.screen=FALSE)
 }
 \references{
 Mast et al. 2015. Paraphyly changes understanding of timing and tempo of
