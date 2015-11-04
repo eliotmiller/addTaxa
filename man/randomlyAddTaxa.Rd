@@ -5,9 +5,9 @@
 \title{Bind species to hypothesized relatives in a phylogeny}
 \usage{
 randomlyAddTaxa(tree, groupings, from.node = "randomly",
-  branch.position = "midpoint", optional.offset = 0, no.trees,
-  clade.membership, crown.can.move = TRUE, print.to.screen = FALSE,
-  file.name)
+  branch.position = "midpoint", optional.offset = 0, lambda = 1, mu = 0,
+  no.trees, clade.membership, crown.can.move = TRUE,
+  print.to.screen = FALSE, file.name)
 }
 \arguments{
 \item{tree}{An ape-style phylogenetic tree}
@@ -19,23 +19,31 @@ to be added, are taken as those that do not match a value in the tip labels of t
 recently diverged), "stem" (previously diverged), or "randomly" crown-wards or
 stem-wards from the tip they are bound to.}
 
-\item{branch.position}{Once the algorithm has selected to which branch a species will be
-bound, this determines where on the branch that happens. Currently there are three
-options. The first, "midpoint", simple breaks the branch in half and binds the species
+\item{branch.position}{Once the algorithm has selected to which branch a species will
+be bound, this determines where on the branch that happens. Currently there are four
+options. The first, "midpoint", simply breaks the branch in half and binds the species
 there. The second, "uniform", will sample from a uniform distribution with a minimum of
-zero and a maximum of the full branch length. The third, "bd", is currently being
-developed and is not fully operational. For now, all it does is take the distribution
-of branches from the full tree and scale it to the branch in question, then sample from
-that. Thus, if there are lots of long branches on average in the phylogeny, the species
+zero and a maximum of the full branch length. The third, "overall", is probably not a
+particularly good idea to use. It takes the distribution of branches from the full tree
+and scales it to the branch in question, then samples from that. Thus, if there are
+lots of long branches on average in the phylogeny, the species
 being bound will tend to be bound closer to the subtending node. Since this is just
 based on the tree-wide distribution of branch lengths as opposed to the lengths in that
 "portion" of the tree, this is not currently recommended. Note that options 2 and 3
-(particularly "bd") mean that species can conceivably be added at the maximum distance
-possible from the tip, i.e. at the node subtending them. This would create branch
+(particularly "overall") mean that species can conceivably be added at the maximum
+distance possible from the tip, i.e. at the node subtending them. This would create
 lengths of zero. To avoid this, the argument "optional.offset" can be set to some small
-value, e.g. 1e-9.}
+value, e.g. 1e-9. This argument does not currently affect uniform, thus there is a very
+small chance that a polytomy could be created with that option. The final option is
+"bd." This uses the corsim function from the TreeSim package to simulate the missing
+speciation events according to speciation (lambda) and extinction (mu) values passed
+to randomlyAddTaxa. This approach is currently in testing.}
 
 \item{optional.offset}{Value to avoid polytomies (see above).}
+
+\item{lambda}{The speciation rate, such as that calculated with diversitree or TreePar.}
+
+\item{mu}{The extinction rate, such as that calculated with diversitree or TreePar.}
 
 \item{no.trees}{The number of desired final trees with all missing species from
 groupings added.}
