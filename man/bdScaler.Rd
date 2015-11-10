@@ -2,9 +2,9 @@
 % Please edit documentation in R/bdScaler.R
 \name{bdScaler}
 \alias{bdScaler}
-\title{Generate a speciation event}
+\title{Generate missing speciation events}
 \usage{
-bdScaler(tree, lambda, mu, min.age, max.age)
+bdScaler(tree, lambda, mu, missing, min.age, max.age)
 }
 \arguments{
 \item{tree}{A phylogeny in ape format.}
@@ -12,6 +12,8 @@ bdScaler(tree, lambda, mu, min.age, max.age)
 \item{lambda}{The speciation rate.}
 
 \item{mu}{The exctinction rate.}
+
+\item{missing}{Number of missing speciation events to be inferred.}
 
 \item{min.age}{Minimum age of the missing speciation event to be inferred. Note that
 this is the age counting back from the tips, such that 0 is the present. Thus, min.age

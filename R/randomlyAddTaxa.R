@@ -358,9 +358,13 @@ randomlyAddTaxa <- function(tree, groupings, from.node="randomly",
 				else if(branch.position=="bd")
 				{
 					#generate a new branching position along the relevant branch
-					#according to a birth-death process with corsim
+					#according to a birth-death process with corsim. subtract j from the
+					#number of missing taxa such that the number of missing taxa decreases
+					#with each iteration of the nested loop. add 1 so that on the last
+					#iteration there is still one species missing
 					newPosition <- bdScaler(tree=new.tree, lambda=lambda, mu=mu,
-						min.age=0, max.age=parentDistance)
+						missing=dim(possGroupings)[1]-j+1, min.age=0,
+						max.age=parentDistance)
 					#REMEMBER that bind.tip will add the new tip at the position BELOW the
 					#tip to which you are binding it. the value coming out of bdScaler
 					#refers to the distance below all the tips, so can pass it directly
@@ -412,7 +416,8 @@ randomlyAddTaxa <- function(tree, groupings, from.node="randomly",
 					#generate a new branching position along the relevant branch
 					#according to a birth-death process with corsim
 					newPosition <- bdScaler(tree=new.tree, lambda=lambda, mu=mu,
-						min.age=0, max.age=parentDistance)
+						missing=dim(possGroupings)[1]-j+1, min.age=0,
+						max.age=parentDistance)
 					#REMEMBER that bind.tip will add the new tip at the position BELOW the
 					#tip to which you are binding it. the value coming out of bdScaler
 					#refers to the distance below all the tips, so can pass it directly
@@ -481,7 +486,7 @@ randomlyAddTaxa <- function(tree, groupings, from.node="randomly",
 					#according to a birth-death process with corsim. for max.age add
 					#grandparent to parentDistance
 					newPosition <- bdScaler(tree=new.tree, lambda=lambda, mu=mu,
-						min.age=parentDistance,
+						missing=dim(possGroupings)[1]-j+1, min.age=parentDistance,
 						max.age=parentDistance + grandparentDistance)
 					new.tree <- bind.tip(tree=new.tree,
 						tip.label=possGroupings$species[j], where=parent, 
