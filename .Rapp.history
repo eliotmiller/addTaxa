@@ -1,325 +1,0 @@
-summary(lm(results$morphoSESnawMPDdispersal~results$bio1mean))
-plot(results$morphoSESnawMPDdispersal~results$bio1mea)
-plot(results$morphoSESnawMPDdispersal~results$bio1mean)
-plot(results$genSESnawMPDdispersal~results$bio1mean)
-plot(results$ecolSESnawMPDdispersal~results$bio1mean)
-plot(results$genSESnawMPDrichness~results$bio1mean)
-plot(results$genSESnawMPDrichness~results$bio12mean)
-plot(results$genSESnawMPDrichness~log10(results$bio12mean))
-plot(results$genSESnawMPDdispersal~log10(results$bio12mean))
-plot(results$morphoSESnawMPDdispersal~results$bio1mean)
-summary(lm(results$morphoSESinterMPDdispersal~log10(results$bio12mean)))
-summary(lm(results$morphoSESnawMPDdispersal~log10(results$bio12mean)))
-summary(lm(results$morphoSESnawMPDrichness~log10(results$bio12mean)))
-summary(lm(results$morphoSESinterMPDrichness~log10(results$bio12mean)))
-plot(results$morphoSESinterMPDrichness~log10(results$bio12mean))
-results$ecolSESnawMPDdispersal[results$ecolSESnawMPDdispersal <= -1.96]
-length(results$ecolSESnawMPDdispersal[results$ecolSESnawMPDdispersal <= -1.96])
-length(results$ecolSESnawMPDdispersal[results$ecolSESnawMPDdispersal >= 1.96])
-length(results$ecolSESinterMPDdispersal[results$ecolSESinterPDdispersal >= 1.96])
-length(results$ecolSESinterMPDdispersal[results$ecolSESinterPDdispersal <= -1.96])
-hist(results$ecolSESinterMPDdispersal)
-length(results$ecolSESinterMPDdispersal[results$ecolSESinterMPDdispersal >= 1.96])
-length(results$ecolSESinterMPDdispersal[results$ecolSESinterMPDdispersal <= -1.96])
-hist(results$ecolSESinterMPDdispersal)
-length(results$ecolSESinterMPDrichness[results$ecolSESinterMPDrichness <= -1.96])
-length(results$ecolSESinterMPDrichness[results$ecolSESinterMPDrichness >= 1.96])
-length(results$ecolSESnawMPDrichness[results$ecolSESnawMPDrichness >= 1.96])
-length(results$ecolSESnawMPDrichness[results$ecolSESnawMPDrichness <= -1.96])
-77/695
-summary(lm(results$ecolSESnawMPDdispersal~results$bio1man))
-summary(lm(results$ecolSESnawMPDdispersal~results$bio1mean))
-summary(lm(results$ecolSESinterMPDdispersal~results$bio1mean))
-summary(lm(results$ecolSESinterMPDdispersal~log10(results$bio12mean)))
-summary(lm(results$ecolSESnawMPDdispersal~log10(results$bio12mean)))
-summary(lm(results$ecolSESinterMPDdispersal~log10(results$bio12mean)))
-head(results)
-summary(lm(results$morphoSESnawMPDdispersal~results$genSESnawMPDdispersal))
-summary(lm(results$morphoSESinterMPDdispersal~results$genSESinterMPDdispersal))
-summary(lm(results$ecolSESinterMPDdispersal~results$genSESinterMPDdispersal))
-summary(lm(results$ecolSESnawMPDdispersal~results$genSESnawMPDdispersal))
-head(morphoResults)
-mean(morphoResults$ses.dispersal.naw.morpho.field)
-wilcoxon.test(morphoResults$ses.dispersal.naw.morpho.field)
-wilcox.test
-wilcox.test(morphoResults$ses.dispersal.naw.morpho.field)
-wilcox.test(morphoResults$ses.dispersal.naw.phylo.field)
-mean(morphoResults$ses.dispersal.naw.phylo.field)
-mean(morphoResults$ses.dispersal.inter.phylo.field)
-mean(morphoResults$ses.dispersal.naw.morpho.field)
-mean(morphoResults$ses.richness.naw.phylo.field)
-mean(morphoResults$ses.richness.inter.phylo.field)
-mean(morphoResults$ses.dispersal.naw.morpho.field)
-sort(morphoResults$ses.dispersal.naw.morpho.field)
-wilcox.test(morphoResults$ses.dispersal.naw.morpho.field)
-wilcox.test(morphoResults$ses.dispersal.inter.morpho.field)
-mean(morphoResults$ses.dispersal.inter.morpho.field)
-sort(morphoResults$ses.dispersal.inter.morpho.field)
-sort(morphoResults$ses.dispersal.naw.ecol.field)
-sort(ecolResults$ses.dispersal.naw.ecol.field)
-mean(ecolResults$ses.dispersal.naw.ecol.field)
-wilcox.test(ecolResults$ses.dispersal.naw.ecol.field)
-wilcox.test(ecolResults$ses.dispersal.inter.ecol.field)
-mean(ecolResults$ses.dispersal.inter.ecol.field)
-sort(ecolResults$ses.dispersal.inter.ecol.field)
-#make some comparative caper objects#
-morphoCaper <- comparative.data(phy=morphoTree, data=morphoResults, names.col=species)#
-ecolCaper <- comparative.data(phy=ecolTree, data=ecolResults, names.col=species)#
-#
-#run pgls regressions to test the main prediction that trait diversity does not mirror#
-#phylogenetic diversity (use both standardized and unstandardized and abundance-weighted#
-#and unweighted versions)#
-nawTestMorpho <- pgls(naw.morpho.field~naw.phylo.field, data=morphoCaper)#
-interTestMorpho <- pgls(inter.morpho.field~inter.phylo.field, data=morphoCaper)#
-sesNawTestMorpho <- pgls(ses.dispersal.naw.morpho.field~ses.dispersal.naw.phylo.field,#
-	data=morphoCaper)#
-sesInterTestMorpho <- pgls(ses.dispersal.inter.morpho.field~#
-	ses.dispersal.inter.phylo.field, data=morphoCaper)#
-#
-nawTestEcol <- pgls(naw.ecol.field~naw.phylo.field, data=ecolCaper)#
-interTestEcol <- pgls(inter.ecol.field~inter.phylo.field, data=ecolCaper)#
-sesNawTestEcol <- pgls(ses.dispersal.naw.ecol.field~ses.dispersal.naw.phylo.field,#
-	data=ecolCaper)#
-sesInterTestEcol <- pgls(ses.dispersal.inter.ecol.field~ses.dispersal.inter.phylo.field,#
-	data=ecolCaper)
-nawTestMorpho
-summary(nawTestMorpho)
-summary(interTestMorpho)
-summary(sesNawTestMorpho)
-summary(sesInterTestMorpho)
-summary(sesNawTestEcol)
-summary(sesInterTestEcol)
-head(morphoResults)
-test <- pgls(naw.ecol.field~naw.phylo.field, data=ecolResults)
-test <- pgls(naw.ecol.field~naw.phylo.field, data=ecolCaper)
-summary(test)
-plot(test)
-head(ecolResults)
-plot(ecolResults$naw.ecol.field~ecolResults$naw.phylo.field)
-library(TreeSim)
-x<-c(1,1.5,3,5)
-x
-lambda<-2
-mu<-1
-tyoung<-0.5
-told<-4.5    # We simulate 5 additional speciation times (i.e. five additional species):    missing<-5    # xcompleted is x plus 5 additional speciation events between 0.5 and 4.5 timesteps    # in the past. xcompleted corresponds to a 10-species tree:    xcompleted<-corsim(x,lambda,mu,missing,told,tyoung)
-xcompleted
-bd.ms
-?bd.ms
-library(TreePar)
-set.seed(1)    # First we simulate a tree, and then estimate the parameters for the tree:    # Number of species    nspecies <- 20    # At time 1 and 2 in the past, we have a rate shift:    time <- c(0,1,2)    # Mass extinction intensities 0.5 at time 1 in past, 0.4 at time 2 in past.    # Present day species are all sampled (rho[1]=1):    rho <- c(1,0.5,0.4)    # speciation rates (between t[i],t[i+1] we have speciation rate lambda[i]):    lambda <- c(2,2,1)    # extinction rates (between t[i],t[i+1] we have extinction rate mu[i]):    mu <- c(1,1,0)    # Simulation of a tree:    tree<-sim.rateshift.taxa(nspecies,1,lambda,mu,frac=rho,times=time,complete=FALSE)    # Extracting the speciation times x:    x<-sort(getx(tree[[1]]),decreasing=TRUE)
-x
-# When estimating the the rate shift times t based on branching times x,    # we allow the shift times to be 0.6, 0.8, 1, 1.2, .. ,2.4:    start <- 0.6    end <- 2.4grid <- 0.2    # We fix rho and estimate time, lambda, mu:    res <- bd.shifts.optim(x,rho,grid,start,end)[[2]]    res    # res[[2]] tells us about the maximum likelihood estimate given one rate shift:    # - log lik = 17.330862988.    # rate shift at time 2.2.    # turnover (extinction/speciation) = 0.186301549 more recent than 2.2,#
-12 bd.shifts.plot    #     and = 0.939681843 more ancestral than 2.2.    # net diversification (speciation-extinction) rate = 0.958947381 more recent than 2.2,    #     and = 0.000100009 more ancestral than 2.2.
-i<-1    test<-pchisq(2*(res[[i]][1]-res[[i+1]][1]),3)
-test
-resyule <- bd.shifts.optim(x,rho,grid,start,end,yule=TRUE)    resyule[[2]]    # We estimate time, rho, lambda, mu:    resrho <- bd.shifts.optim(x,rho,grid,start,end,ME=TRUE)    resrho[[2]]    # Data analysis in Stadler & Bokma, 2012:    # Number of species in each order from Sibley and Monroe (1990)    data(bird.orders)    S <- c(10, 47, 69, 214, 161, 17, 355, 51, 56, 10, 39, 152, 6, 143,    358, 103, 319, 23, 291, 313, 196, 1027, 5712)    groups<-get.groups(bird.orders,S,0)    groupscut<-get.groups(bird.orders,S,96.43)    x<-branching.times(bird.orders)    # transforming molecular timescale into calendar timescale    groups[,1]<-groups[,1]/0.207407    x<-x/0.207407    bd.shifts.optim(x,sampling=c(1),survival=1,groups=groups)[[2]]    bd.shifts.optim(x,sampling=c(1),survival=1,groups=groupscut)[[2]]    # allowing one shift in rates:    bd.shifts.optim(x,sampling=c(1,1),grid=1,start=20,end=25,survival=1,groups=groupscut)[[2]]
-library(geiger)
-?fitContinuous
-?fitContinuousMCMC
-fitContinuousMCMC
-library(geiger)
-?congruifier
-?congruify
-?congruify.phylo
-?nodelabels
-?makeNodelabels
-?makeNodeLabel
-library(TreePar)
-?corsim
-library(TreeSim)
-###########################################################################################
-############################ Start libraries and set WD ###################################
-###########################################################################################
-#
-library(caper)#
-library(dplyr)#
-library(picante)#
-library(phytools)#
-library(candisc)#
-library(geomorph)#
-library(geiger)#
-library(plotrix)#
-library(simpleFDis)#
-library(fpc)#
-library(metricTester)#
-library(convevol)
-load("/Users/eliotmiller/Documents/Writing and Other Work/Post-doc Work/Meliphagidae ecomorphology/outputs/ecomorphology20Sep2015.RData")
-ls()
-head(morpho)
-head(probablyGrouped)
-10^2.4`
-10^2.41
-log(100)
-e2
-2e
-e^2
-e
-exp2
-exp^2
-exp(2.41)
-head(morpho)
-test <- as.data.frame(morpho)
-head(test)
-test[1,]
-test[,1]
-test[,2]
-names(test)
-test <- as.data.frame(morpho)#
-#
-for(i in c(2,4,6,9:15))#
-{#
-	test[,i] <- exp(test[,i])#
-}
-head(test)
-hist(test[,1])
-hist(test[,2])
-hist(test[,3])
-hist(test[,4])
-head(rawDF)
-head(test)
-write.csv(test, "morpho_for_pub.csv", row.names=FALSE)
-head(toOrdinate)
-dim(toOrdinate)
-write.csv(toOrdinate, "ecol_for_pub.csv")
-library(TreePar)
-?corsim
-library(TreeSim)
-library(expoTree)
-install.packages("expoTree", dependencies=TRUE)
-?LikAge
-library(diversitree)
-install.packages("diversitree", dependencies=TRUE)
-library(diversitree)
-tree <- tree.bd(c(1,0), max.taxa=100)#
-#
-lik <- make.bd(tree, sampling.f=0.5)#
-find.mle(lik, c(1,0.1))
-###########################################################################################
-############################ Start libraries and set WD ###################################
-###########################################################################################
-#
-library(caper)#
-library(dplyr)#
-library(picante)#
-library(phytools)#
-library(candisc)#
-library(geomorph)#
-library(geiger)#
-library(plotrix)#
-library(simpleFDis)#
-library(fpc)#
-library(metricTester)#
-library(convevol)
-load("/Users/eliotmiller/Documents/Writing and Other Work/Post-doc Work/Meliphagidae ecomorphology/outputs/ecomorphology20Sep2015.RData")
-head(results)
-plot(results$nawMorphoMPD~log10(results$bio12mean))
-plot(results$nawEcolMPD~log10(results$bio12mean))
-summary(lm(results$nawEcolMPD~log10(results$bio12mean)))
-100!
-factorial(100)
-factorial(3)
-factorial(10)
-10+9+8+7+6+5+4+3+2+1
-sum(1:3)
-sum(1:4)
-sum(1:5)
-sum(1:99)
-###########################################################################################
-############################ Start libraries and set WD ###################################
-###########################################################################################
-#
-library(caper)#
-library(dplyr)#
-library(picante)#
-library(phytools)#
-library(candisc)#
-library(geomorph)#
-library(geiger)#
-library(plotrix)#
-library(simpleFDis)#
-library(fpc)#
-library(metricTester)#
-library(convevol)
-load("/Users/eliotmiller/Documents/Writing and Other Work/Post-doc Work/Meliphagidae ecomorphology/outputs/ecomorphology20Sep2015.RData")
-head(morphoCaper)
-head(morphoRates)
-#make some comparative caper objects#
-morphoCaper <- comparative.data(phy=morphoTree, data=morphoResults, names.col=species)#
-ecolCaper <- comparative.data(phy=ecolTree, data=ecolResults, names.col=species)
-str(morphoCaper)
-head(morphoCaper$data)
-summary(pgls(ses.richness.naw.morpho.field~ses.richness.naw.phylo.field, data=morphoCaper))
-summary(pgls(ses.richness.inter.morpho.field~ses.richness.inter.phylo.field, data=morphoCaper))
-summary(pgls(inter.morpho.field~inter.phylo.field, data=morphoCaper))
-summary(pgls(naw.morpho.field~naw.phylo.field, data=morphoCaper))
-summary(pgls(ses.richness.naw.ecol.field~ses.richness.naw.phylo.field, data=ecolCaper))
-summary(pgls(ses.richness.naw.ecol.field~ses.richness.naw.phylo.field, data=morphoCaper))
-summary(pgls(ses.richness.naw.ecol.field~ses.richness.naw.phylo.field, data=ecolCaper))
-summary(pgls(ses.richness.inter.ecol.field~ses.richness.inter.phylo.field, data=ecolCaper))
-head(ecolResults)
-ecolPruend
-ecolTree
-x <- ecolResults$ses.richness.naw.ecol.field
-names(x) <- ecolResults$species
-contMap(tree=ecolTree, x=x, fsize=0.5)
-x <- morphoResults$ses.richness.naw.morpho.field
-names(x) <- morphoResults$species
-contMap(tree=ecolTree, x=x, fsize=0.5)
-contMap(tree=morphoTree, x=x, fsize=0.5)
-x <- ecolResults$ses.dispersal.naw.ecol.field
-names(x) <- ecolResults$species
-contMap(tree=ecolTree, x=x, fsize=0.5)
-x <- morphoResults$ses.dispersal.naw.morpho.field
-names(x) <- morphoResults$species
-contMap(tree=morphoTree, x=x, fsize=0.5)
-summary(pgls(ses.richness.naw.morpho.field~ses.richness.naw.phylo.field, data=morphoCaper))
-summary(pgls(ses.richness.naw.ecol.field~ses.richness.naw.phylo.field, data=ecolCaper))
-ecolCaper$data$ses.richness.naw.phylo.field
-summary(lm(ecolCaper$data$ses.richness.naw.ecol.field~ecolCaper$data$ses.richness.naw.phylo.field))
-summary(pgls(ses.richness.naw.ecol.field~ses.richness.naw.phylo.field, data=ecolCaper))
-summary(pgls(ses.richness.inter.ecol.field~ses.richness.inter.phylo.field, data=ecolCaper))
-head(results)
-plot(results$ecolSESnawMPDdispersal~results$richness)
-plot(results$ecolSESinterMPDdispersal~results$richness)
-plot(results$ecolSESinterMPDrichness~results$richness)
-plot(results$ecolSESinterMPDdispersal~results$richness)
-summary(lm((results$ecolSESinterMPDdispersal~results$richness)))
-sesInterEcolObsDispersal
-head(sesInterEcolObsDispersal)
-head(ecolExp)
-str(ecolExp)
-head(ecolExp$dispersal)
-tail(ecolExp$dispersal)
-ecolExp$dispersal$ida
-ecolExp$dispersal$id
-sort(ecolExp$dispersal$id)
-temp <- ecolExp$dispersal$ecol_dispersal.interMPD.average
-head(temp)
-temp <- data.frame(id=ecolExp$dispersal$id, av=temp)
-head(temp)
-head(results)
-temp2 <- data.frame(id=results$id)
-head(temp2)
-temp3 <- merge(temp,temp2)
-head(temp3)
-temp2 <- data.frame(id=results$id, richness=results$richness)
-head(temp2)
-temp3 <- merge(temp,temp2)
-head(temp3)
-plot(temp3$av~temp3$richness)
-head(ecolExp)
-head(ecolExp$dispersal)
-plot(results$ecolSESinterMPDrichness~results$richness)
-plot(results$ecolSESinterMPDdispersal~results$richness)
-plot(results$ecolSESnawMPDdispersal~results$richness)
-plot(results$ecolSESinterMPDdispersal~results$richness)
-results$ecolSESinterMPDdispersal[results$ecolSESinterMPDdispersal <= -1.96]
-length(results$ecolSESinterMPDdispersal[results$ecolSESinterMPDdispersal <= -1.96])
-plot(results$morphoSESinterMPDdispersal~results$richness)
-plot(results$morphoSESnawMPDdispersal~results$richness)
-summary(lm(ecolCaper$data$naw.ecol.field~ecolCaper$data$naw.phylo.field))
-summary(lm(ecolCaper$data$inter.ecol.field~ecolCaper$data$inter.phylo.field))
-library(devtools)
-load_all()
-document()
