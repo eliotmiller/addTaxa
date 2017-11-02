@@ -107,10 +107,11 @@
 randomlyAddTaxa <- function(tree, groupings, branch.position="midpoint", 
 	lambda=1, mu=0, no.trees, clade.membership, crown.can.move=TRUE)
 {
-	#set up a blank list and set aside the orig tree to reload below
+	#set up a blank list and set aside the orig tree and DF to reload below
 	trees <- list()
 	clade.tables <- list()
 	origTree <- tree
+	origMembership <- clade.membership
 
 	#not sure what would happen if provided with a polytomous tree, so throw an 
 	#error here
@@ -130,8 +131,19 @@ randomlyAddTaxa <- function(tree, groupings, branch.position="midpoint",
 		clade.membership[,2] <- as.character(clade.membership[,2])
 
 		#insert a check here to ensure all the named clades are actually monophyletic
-		#and another check to ensure that none of the named clades contain other
-		#named clades.
+		#split the clade.membership table on clade. if any are not monophyletic, stop
+		splitUp <- split(clade.membership, clade.membership$clade)
+		mono <- unlist(lapply(splitUp, function(x) is.monophyletic(tree, x$species)))
+		if(!all(mono))
+		{
+			stop("All named clades in clade.membership table are not monophyletic")
+		}
+
+		#insert another check to make sure the clades are not nested
+		if(length(clade.membership$species) != length(unique(clade.membership$species)))
+		{
+			stop("The clades are not mutually exclusive")
+		}
 	}
 
 	#use identify missing to figure out which taxa are not in the input tree
@@ -185,7 +197,15 @@ randomlyAddTaxa <- function(tree, groupings, branch.position="midpoint",
 			relatedSpp <- relatedSpp[relatedSpp %in% tree$tip.label]
 
 			#if relatedSpp is of length 1, just bind directly to it and bounce down to
-			#bottom to determine binding distance
+			#bottom to determine binding distance. a few important things to notice
+			#here. first, getMRCAs will have returned the MRCA of any single-taxon
+			#clades as the tip node of the taxon. this would mean that that node gets
+			#excluded as a problem node and cannot be bound to. however, we do not
+			#assess problem nodes in this step. the steps below where we do should not
+			#be relevant because they shouldn't be single taxon clades. if on one
+			#iteration we bind a species to a single species taxon, and if 
+			#crown.can.move is set to FALSE, the new MRCA of the clade is going to
+			#become the crown and THEN it can no longer move.
 			if(length(relatedSpp) == 1)
 			{
 				#identify the node that represents that species
@@ -277,29 +297,18 @@ randomlyAddTaxa <- function(tree, groupings, branch.position="midpoint",
 					groupToExamine <- groupings$group[groupings$species %in% toExamine]
 
 					#if there is one unique element in this vector, then the node is
-					#monophyletic
+					#monophyletic. you do not need to check if it is the root, did so above
 					if(length(unique(groupToExamine)) == 1)
 					{
-						#in this case, first check that parent is not the root of the tree
-						if(parent == length(tree$tip.label) + 1)
-						{
-							#if it is, set keepGoing to FALSE
-							keepGoing <- FALSE
-						}
+						#identify the set of possible nodes that descend from parent
+						dNodes <- geiger:::.get.descendants.of.node(node=parent,
+							phy=tree, tips=FALSE)
+						allNodes <- c(parent, dNodes)
 
-						#otherwise
-						else
-						{
-							#identify the set of possible nodes that descend from parent.
-							dNodes <- geiger:::.get.descendants.of.node(node=parent,
-								phy=tree, tips=FALSE)
-							allNodes <- c(parent, dNodes)
-
-							#set bindingTo to be parent, then set parent to be the node one
-							#below what it was
-							bindingTo <- parent
-							parent <- tree$edge[,1][tree$edge[,2]==parent]
-						}
+						#set bindingTo to be parent, then set parent to be the node one
+						#below what it was
+						bindingTo <- parent
+						parent <- tree$edge[,1][tree$edge[,2]==parent]
 					}
 
 					#if the vector is not monophyletic, no need to keepGoing
@@ -321,20 +330,13 @@ randomlyAddTaxa <- function(tree, groupings, branch.position="midpoint",
 
 				else
 				{
+					#identify descendants
 					dNodes <- geiger:::.get.descendants.of.node(node=bindingTo,
 						phy=tree, tips=FALSE)
 
-					#confirm that bindingTo is not the root. if it was then the only way
-					#it could be bound would be to create a polytomy. if bindingTo is not
-					#the root, add it to all descendant nodes for sampling from below
-					if(bindingTo == length(tree$tip.label) + 1)
-					{
-						allNodes <- dNodes
-					}
-					else
-					{
-						allNodes <- c(bindingTo, dNodes)
-					}
+					#at this point there should be no way that bindingTo is
+					#the root, so add it to all descendant nodes for sampling from below
+					allNodes <- c(bindingTo, dNodes)
 				}		
 
 				#REALLY REALLY IMPORTANT. sample produces really odd results if sampling
@@ -450,32 +452,36 @@ randomlyAddTaxa <- function(tree, groupings, branch.position="midpoint",
 			#node belongs to, if any, and update the table accordingly
 			if(!missing(clade.membership))
 			{
-				#find all ancestors of bindTo
-				ancestors <- geiger:::.get.ancestors.of.node(node=bindTo, phy=tree)
-
-				#find the MRCAs of all named clades
+				#this seems like it could be costly, but I can't think of a better
+				#way to do it. for every
+				#named clade, find the MRCA, then find all nodes that descend from
+				#each of those. then figure out if bindTo is represented in any of
+				#those sets. find the MRCAs of all named clades
 				mrcas <- unlist(getMRCAs(tree, clade.membership))
+
+				#identify all descendants. notice that you have this function
+				#programmed so that it returns the tip of single taxon clades. that
+				#means this should successfully tabulate additions to tips that
+				#are initially considered "clades". moreover, it should mean that
+				#if the clades are monophyletic and non-overlapping, 
+				#there is no way two clades can share a descendant.
+				allDesc <- lapply(mrcas, function(x)
+					geiger:::.get.descendants.of.node(node=x, phy=tree))
+
+				#subset those descendants to any (should only be one) that match
+				anyMatches <- lapply(allDesc, function(x) x[x==bindTo])
 
 				#subset the names of the clades to the hopefully single node that 
 				#represents the crown node of a clade and is considered an ancestor
 				#of bindTo
-				clade <- names(mrcas)[mrcas %in% ancestors]
-
-				print(clade)
+				clade <- names(unlist(anyMatches))
 
 				#if the length of clade is 0, then the node we are binding the tip to
-				#was not in a named clade. in that case, create a dummy data frame
-				#with clade set to NA, then rbind it to clade.membership
-				if(length(clade) == 0)
-				{
-					toBind <- data.frame(species=toAdd[j,1], clade=NA)
-					clade.membership <- rbind(clade.membership, toBind)
-				}
-
-				else
+				#was not in a named clade. in that case, do not bind it into the DF,
+				#as do not need to keep track of it
+				if(length(clade) == 1)
 				{
 					toBind <- data.frame(species=toAdd[j,1], clade=clade)
-					print(toBind)
 					clade.membership <- rbind(clade.membership, toBind)
 				}
 			}
@@ -488,7 +494,7 @@ randomlyAddTaxa <- function(tree, groupings, branch.position="midpoint",
 		#save the complete tree as an element in the list object. do same for
 		#clade membership if it exists
 		trees[[i]] <- tree
-		
+	
 		if(!missing(clade.membership))
 		{
 			clade.tables[[i]] <- clade.membership
@@ -499,8 +505,13 @@ randomlyAddTaxa <- function(tree, groupings, branch.position="midpoint",
 			clade.tables[[i]] <- "clade.membership table not provided"
 		}
 		
-		#set tree back to original tree
+		#set tree back to original tree and original clade.membership
 		tree <- origTree
+
+		if(!missing(clade.membership))
+		{
+			clade.membership <- origMembership
+		}
 	}
 	
 	#set the class of trees to multiPhylo, bind with clade.tables and return
