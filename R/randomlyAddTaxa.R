@@ -4,32 +4,22 @@
 #' some of those species in it, will add the missing species in next to a taxonomic 
 #' relative. Optionally, can keep track of which named clades species are bound to.
 #'
-#' @param tree An ape-style phylogenetic tree
+#' @param tree An ape-style phylogenetic tree.
 #' @param groupings A data frame with two columns, "species" and "group". Missing species,
 #' to be added, are taken as those that do not match a value in the tip labels of tree.
-#' @param from.node Whether species should be added in a "polytomy" with, "crown" (more 
-#' recently diverged), "stem" (previously diverged), or "randomly" crown-wards or
-#' stem-wards from the tip they are bound to.
-#' @param branch.position Once the algorithm has selected to which branch a species will
+#' @param branch.position
+#' Once the algorithm has selected to which branch a species will
 #' be bound, this determines where on the branch that happens. Currently there are four
-#' options. The first, "midpoint", simply breaks the branch in half and binds the species
-#' there. The second, "uniform", will sample from a uniform distribution with a minimum of
-#' zero and a maximum of the full branch length. The third, "overall", is probably not a
-#' particularly good idea to use. It takes the distribution of branches from the full tree
-#' and scales it to the branch in question, then samples from that. Thus, if there are
-#' lots of long branches on average in the phylogeny, the species
-#' being bound will tend to be bound closer to the subtending node. Since this is just
-#' based on the tree-wide distribution of branch lengths as opposed to the lengths in that
-#' "portion" of the tree, this is not currently recommended. Note that options 2 and 3
-#' (particularly "overall") mean that species can conceivably be added at the maximum 
-#' distance possible from the tip, i.e. at the node subtending them. This would create
-#' lengths of zero. To avoid this, the argument "optional.offset" can be set to some small
-#' value, e.g. 1e-9. This argument does not currently affect uniform, thus there is a very
-#' small chance that a polytomy could be created with that option. The final option is
+#' options. The second, "midpoint", simply breaks the branch in half and binds the species
+#' there. The third, "uniform", will sample from a uniform distribution with a minimum of
+#' zero and a maximum of the full branch length. Note that this 
+#' means that species can conceivably be added at the maximum or minimum
+#' distance possible from the tip, which would create a polytomy.
+#' I have removed checks to account and deal with this--if you need them back let me know. 
+#' The fourth option is
 #' "bd." This uses the corsim function from the TreeSim package to simulate the missing
 #' speciation events according to speciation (lambda) and extinction (mu) values passed
 #' to randomlyAddTaxa. This approach is currently in testing.
-#' @param optional.offset Value to avoid polytomies (see above).
 #' @param lambda The speciation rate, such as that calculated with diversitree or TreePar.
 #' @param mu The extinction rate, such as that calculated with diversitree or TreePar.
 #' @param no.trees The number of desired final trees with all missing species from 
@@ -38,7 +28,7 @@
 #' column = "clade". These are named, monophyletic clades to which the species in the
 #' input phylogeny can belong. Not every species in the input phylogeny needs to be in the
 #' clade membership data frame, but missing species added to species not in this frame
-#' will not be included in the output clade membership data frame. They will of course
+#' will not be included in the output clade membership data frame. They will
 #' still be included in the output phylogenies.
 #' @param crown.can.move Logical. If TRUE, and if missing taxa are to be added stemwards,
 #' this will allow the age of the crown group to potentially shift back in time. If FALSE,
@@ -49,14 +39,8 @@
 #' are added. Specifically, if missing taxa are bound to single-species clades, then the
 #' crown age will "shift" forward in time (the single-taxon clade did not actually have a 
 #' crown age).
-#' @param print.to.screen Logical. Will print a list of the missing taxa to screen.
-#' @param file.name Optional name for output RData file. If not provided then the object
-#' will be stored in memory instead of saved to workspace. Either way, it is calculated in
-#' memory. The function could probably be sped up by having this save directly to file,
-#' appending each tree instead of first saving them all to memory. The saved object can be
-#' loaded with load(), and will be imported with the name "taxaAddResults".
 #' 
-#' @details Given a data frame of two columns, "species" and "group", will take a species
+#' @details REVISE! Given a data frame of two columns, "species" and "group", will take a species
 #' that is absent from the phylogeny and bind it to a randomly selected taxonomic 
 #' relative. Note that the current implementation of the function iteratively builds up
 #' the tree, meaning that a species being bound into the tree can be bound to a
@@ -100,426 +84,427 @@
 #'
 #' #create a data frame of all taxa from the phylogeny, and make up species groups
 #' #for each.
-#' dummyGroups <- data.frame(species=bird.families$tip.label, 
-#' group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), 
-#' rep("oscine", 20)))
+#' dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),
+#'   rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))
 #' 
 #' #now make up a few passerine taxa that are missing and add these into the dummy frame
-#' toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), 
-#' group=c(rep("oscine", 2), rep("basalOscine", 2)))
+#' toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), 
+#' group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))
 #' groupsDF <- rbind(dummyGroups, toAdd)
 #'
-#' #these groups were actually monophyletic. but make a slightly more detailed clade
-#' #membership frame to see how one would be used. note that it doesn't include the
-#' #missing taxa, and taxonomy does not exactly follow modern understanding
-#' cladesDF <- data.frame(species=bird.families$tip.label, 
-#' clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),
-#' rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))
+#' #pay attention to additions to the basalOscine and oscine clades.
+#' basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]
+#' oscines <- dummyGroups[dummyGroups$group=="oscine",]
+#' cladesDF <- rbind(basalOscines, oscines)
+#' names(cladesDF)[2] <- "clade"
 #'
-#' #examples of changing the from.node argument. you can plot or write these trees out to
-#' #better see what the differences are
-#' crown <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF, from.node="crown", 
+#' #examples of changing the branch.position argument. you can plot or write
+#' #these trees better see what the differences are
+#' ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,
 #' 	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, 
-#'	crown.can.move=TRUE, print.to.screen=FALSE)
-#' stem <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF, from.node="stem", 
-#' 	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, 
-#'	crown.can.move=TRUE, print.to.screen=FALSE)
-#' polytomy <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,
-#'	from.node="polytomy", branch.position="midpoint", no.trees=10, 
-#'	clade.membership=cladesDF, crown.can.move=TRUE, print.to.screen=FALSE)
-#' randomly <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,
-#'	from.node="randomly", branch.position="midpoint", no.trees=10, 
-#'	clade.membership=cladesDF, crown.can.move=TRUE, print.to.screen=FALSE)
+#'	crown.can.move=TRUE)
 
-randomlyAddTaxa <- function(tree, groupings, from.node="randomly",
-	branch.position="midpoint", optional.offset=0, lambda=1, mu=0, no.trees,
-	clade.membership, crown.can.move=TRUE, print.to.screen=FALSE, file.name)
+randomlyAddTaxa <- function(tree, groupings, branch.position="midpoint", 
+	lambda=1, mu=0, no.trees, clade.membership, crown.can.move=TRUE)
 {
-	#add a line to throw an error if from.node is not properly specified
-	if(from.node != "randomly" & from.node != "crown" & from.node != "stem" 
-		& from.node != "polytomy")
-	{
-		stop("from.node must be set to one of 'randomly', 'crown', 'stem', or 'polytomy'")
-	}
+	#set up a blank list and set aside the orig tree to reload below
+	trees <- list()
+	clade.tables <- list()
+	origTree <- tree
 
-	#not sure what would happen if provided with a polytomous tree, so throw an error here
+	#not sure what would happen if provided with a polytomous tree, so throw an 
+	#error here
 	if(is.binary.tree(tree) == FALSE)
 	{
 		stop("Input tree is not binary. Cannot currently account for this.")
 	}
 
-	#use identify missing to figure out which taxa are not in the input tree
-	possGroupings <- identifyMissing(tree, groupings, print.to.screen)
+	#force groupings DF to character if it isn't. do same for clade.membership
+	#if it is provided
+	groupings[,1] <- as.character(groupings[,1])
+	groupings[,2] <- as.character(groupings[,2])
 
-	#add a check to ensure that all missing species are included in a taxonomic group that
+	if(!missing(clade.membership))
+	{
+		clade.membership[,1] <- as.character(clade.membership[,1])
+		clade.membership[,2] <- as.character(clade.membership[,2])
+
+		#insert a check here to ensure all the named clades are actually monophyletic
+		#and another check to ensure that none of the named clades contain other
+		#named clades.
+	}
+
+	#use identify missing to figure out which taxa are not in the input tree
+	toAdd <- identifyMissing(tree, groupings)
+
+	#shuffle the toAdd table so that each new tree more efficiently explores
+	#possible tree space. 
+	toAdd <- toAdd[order(sample(toAdd$species)),]
+
+	#add a check to ensure that all missing species are included in a taxonomic
+	#group that
 	#is included in the input tree
-	inTree <- groupings[!(groupings$species %in% possGroupings$species),]
+	inTree <- groupings[!(groupings$species %in% toAdd$species),]
 	inTree <- unique(inTree$group)
 
-	if(length(setdiff(unique(possGroupings$group), inTree)) > 0)
+	if(length(setdiff(unique(toAdd$group), inTree)) > 0)
 	{
 		stop("All missing species must be part of a taxonomic group in the input tree")
 	}
 
-	#use dangerList() to figure out who cannot be bound to stemwards
-	problemTaxa <- dangerList(tree, clade.membership, crown.can.move, print.to.screen)
-
-	#set to character clade memberships, if provided
-	if(!missing(clade.membership))
-	{
-		clade.membership$species <- as.character(clade.membership$species)
-		clade.membership$clade <- as.character(clade.membership$clade)
-	}
-
-	#set up an empty list to save the complete trees into
-	random.trees <- list()
-	
-	#set up an empty list to save the optionally complete clade.membership data frames
-	clade.memberships <- list()
-	
+	#begin outer loop where you aggregate complete trees
 	for(i in 1:no.trees)
 	{
-		#shuffle the possGroupings table so that each new tree more efficiently explores
-		#possible tree space
-		possGroupings <- possGroupings[order(sample(possGroupings$species)),]
-
-		#define a new tree. this is so that it starts with the input tree not the final
-		#tree at the end of each for loop
-		new.tree <- tree
-		
-		#define a temp clade membership table so it starts with the input at end of each.
-		#also set up an empty table to keep track of where species are bound in according
-		#to the optional clade.membership input
-		if(!missing(clade.membership))
+		#begin inner loop where you build up individual trees
+		for(j in 1:dim(toAdd)[1])
 		{
-			clade.membership.temp <- clade.membership
-			tabulations <- matrix(nrow=dim(possGroupings)[1], ncol=2)
-			tabulations <- as.data.frame(tabulations)
-			names(tabulations) <- c("species", "clade")
-
-		}
-		else
-		{
-			clade.memberships[[i]] <- "No clade membership input provided"
-		}
-
-		for(j in 1:dim(possGroupings)[1])
-		{
-			#if from.node was set to "randomly", define whether the current species to be
-			#added will be added above or below the node
-			if(from.node=="randomly")
+			#if the clade.membership table is provided, and if crown.can.move is FALSE,
+			#find the MRCA of all the named clades. continually update this so that as
+			#species are added to named clades, these nodes change also. add the root
+			#node to it, to simplify some things below
+			if(!missing(clade.membership) & crown.can.move==FALSE)
 			{
-				chooseFrom <- c("crown","stem")
-				from.nodeUsed <- sample(chooseFrom,1)
+				problemNodes <- unlist(getMRCAs(tree, clade.membership))
+				rootNode <- length(tree$tip.label) + 1
+				names(rootNode) <- "root"
+				problemNodes <- c(problemNodes, rootNode)
 			}
-			
+
+			#if those conditions are not true, just set problemNodes to the root
 			else
 			{
-				from.nodeUsed <- from.node
+				problemNodes <- length(tree$tip.label) + 1
+				names(problemNodes) <- "root"
 			}
 
-			#subset the groupings to those we have phylogenetic information for.
-			#note that because new.tree gets updated after each iteration,
-			#this gets updated after each species is added in, so an unsequenced
-			#species can get bound to what was also an unsequenced sp on a previous loop
-			grouped <- groupings[groupings$species %in% new.tree$tip.label, ]
+			#find all tips in the species group that tip i belongs to
+			relatedSpp <- groupings$species[groupings$group == toAdd$group[j]]
 
-			#subset the species that are grouped to those whose group matches
-			#the species you are adding in. 
-			bindingToList <- grouped$species[grouped$group == possGroupings$group[j]]
+			#this included species that potentially are not yet in the tree. drop any
+			#species that are not yet in the tree
+			relatedSpp <- relatedSpp[relatedSpp %in% tree$tip.label]
 
-			#check whether there is more than one species in the list (the species group).
-			#if so, set big enough to 1. later down the line, this means we will be ok
-			#with adding the missing species stemwards. if there is a single species only
-			#set big enough to 0. in this case, adding the missing species stemward would
-			#render the species group polyphyletic. while it is entirely possible that a
-			#species group could still be polyphyletic and have multiple taxa in input
-			#phylogeny, our adding of missing taxa will not be responsible for making the
-			#species group polyphyletic (in other words we do not preclude making the 
-			#species group "more" polyphyletic)
-			
-			if(length(bindingToList) > 1)
+			#if relatedSpp is of length 1, just bind directly to it and bounce down to
+			#bottom to determine binding distance
+			if(length(relatedSpp) == 1)
 			{
-				bigEnough <- 1
+				#identify the node that represents that species
+				bindTo <- which(tree$tip.label==relatedSpp)
 			}
+
+			#if there are > 1 relatedSpp, figure out whether it is a monophyletic group
+			else if(is.monophyletic(tree, relatedSpp))
+			{
+				#if true, find the MRCA of the clade of related spp
+				crownNode <- getMRCA(tree, relatedSpp)
+
+				#now find all nodes that descend from the crownNode. previously, you were
+				#only returning tips if branch.position was set to polytomy, but actually
+				#as long as the species' group is monophyletic it's ok to add new species
+				#into that group in polytomies with internal nodes. the tips=FALSE arg
+				#returns tips and internal nodes; tips=TRUE just returns tips
+				dNodes <- geiger:::.get.descendants.of.node(node=crownNode,
+					phy=tree, tips=FALSE)
+				
+				#confirm that crownNode is not a part of the set of problem nodes
+				#defined above. if it is, only consider nodes that descend from it.
+				if(length(problemNodes[problemNodes == crownNode])==1)
+				{
+					allNodes <- dNodes
+				}
+				
+				#otherwise add the crown node to consideration as a place to bind the tip
+				else
+				{
+					#importantly, note that you do not have to figure out who the
+					#parent node of crownNode is, because bind.tip's position arg
+					#will, if given a positive value, bind stemward from crownNode
+					allNodes <- c(crownNode, dNodes)
+				}
+
+				#REALLY REALLY IMPORTANT. sample produces really odd results if sampling
+				#from a numeric vector of length 1. need to account for that with this
+				#overcomplicated if else statement. then randomly sample allNodes for 1
+				if(length(allNodes)==1)
+				{
+					bindTo <- allNodes
+				}
+				else
+				{
+					bindTo <- sample(allNodes, 1)
+				}
+			}
+
+			#if relatedSpp are not monophyletic, go into a more costly procedure to
+			#figure out where you can bind the tip in.
 			else
 			{
-				bigEnough <- 0
+				#first randomly sample a species from relatedSpp
+				bindingToSp <- sample(relatedSpp, 1)
+
+				#identify the node that represents that species
+				bindingTo <- which(tree$tip.label==bindingToSp)
+
+				#identify the node that subtends the node in question. at this point
+				#you shouldn't have to worry about going "below" the root, since there
+				#will always be one node stemwards from a tip. after that we check to
+				#make sure we don't go past the root
+				parent <- tree$edge[,1][tree$edge[,2]==bindingTo]
+
+				#go into a while loop where keep bumping down the tree until you hit
+				#a node that doesn't lead to a set of monophyletic ancestors
+				#according to the species groups.
+				keepGoing <- TRUE
+
+				while(keepGoing)
+				{
+					#check whether the parent node is part of problem nodes. if it is,
+					#set keepGoing to FALSE so it will just bind to the bindingTo sp
+					if(length(problemNodes[problemNodes == bindingTo])==1)
+					{
+						keepGoing <- FALSE
+					}
+
+					#figure out which tip nodes descend from this parent node
+					toExamineNodes <- geiger:::.get.descendants.of.node(node=parent,
+						phy=tree, tips=TRUE)
+
+					#figure out which species these nodes represent
+					toExamine <- tree$tip.label[toExamineNodes]
+
+					#figure out whether all these species belong to the same group.
+					#this will pull a vector of the group to which each species belongs
+					groupToExamine <- groupings$group[groupings$species %in% toExamine]
+
+					#if there is one unique element in this vector, then the node is
+					#monophyletic
+					if(length(unique(groupToExamine)) == 1)
+					{
+						#in this case, first check that parent is not the root of the tree
+						if(parent == length(tree$tip.label) + 1)
+						{
+							#if it is, set keepGoing to FALSE
+							keepGoing <- FALSE
+						}
+
+						#otherwise
+						else
+						{
+							#identify the set of possible nodes that descend from parent.
+							dNodes <- geiger:::.get.descendants.of.node(node=parent,
+								phy=tree, tips=FALSE)
+							allNodes <- c(parent, dNodes)
+
+							#set bindingTo to be parent, then set parent to be the node one
+							#below what it was
+							bindingTo <- parent
+							parent <- tree$edge[,1][tree$edge[,2]==parent]
+						}
+					}
+
+					#if the vector is not monophyletic, no need to keepGoing
+					else
+					{
+						keepGoing <- FALSE
+					}
+				}
+
+				#hopefully the previous while loop bumped the bindingTo node up to whatever
+				#the most stemwards monophyletic node was encompassing the randomly sampled
+				#species. if bindingTo is a species, then there are no descendants, and need
+				#to bind directly to that tip. otherwise, identify the nodes that descend
+				#from bindingTo and randomly sample one to actually bind to.		
+				if(bindingTo <= length(tree$tip.label))
+				{
+					allNodes <- bindingTo
+				}
+
+				else
+				{
+					dNodes <- geiger:::.get.descendants.of.node(node=bindingTo,
+						phy=tree, tips=FALSE)
+
+					#confirm that bindingTo is not the root. if it was then the only way
+					#it could be bound would be to create a polytomy. if bindingTo is not
+					#the root, add it to all descendant nodes for sampling from below
+					if(bindingTo == length(tree$tip.label) + 1)
+					{
+						allNodes <- dNodes
+					}
+					else
+					{
+						allNodes <- c(bindingTo, dNodes)
+					}
+				}		
+
+				#REALLY REALLY IMPORTANT. sample produces really odd results if sampling
+				#from a numeric vector of length 1. need to account for that with this
+				#overcomplicated if else statement. then randomly sample allNodes for 1
+				if(length(allNodes)==1)
+				{
+					bindTo <- allNodes
+				}
+				else
+				{
+					bindTo <- sample(allNodes, 1)
+				}
 			}
 
-			#randomly choose one of the species that is currently in the phylogeny and is
-			#in the same taxonomic group as the species being added.
-			#identify which "node" that randomly chosen species is
-			bindingToSpecies <- sample(bindingToList, 1)
-	
-			#add a line to automatically switch from.node back to "crown" if the species
-			#being bound to is on the danger list
-			if(bindingToSpecies %in% problemTaxa 
-				& (from.node=="stem" | from.node=="randomly"))
+			#calculate position based on the chosen method
+			if(branch.position=="polytomy")
 			{
-				from.nodeUsed <- "crown"
+				bindDist <- 0
 			}
 
-			#this identifies the node of the bindingToSpecies
-			bindingTo <- which(new.tree$tip.label==bindingToSpecies)
-			
-			#add an internal if statement here that will keep track of, if provided, the
-			#clade membership of where missing species are added
+			else if(branch.position=="midpoint")
+			{
+				#identify the node that subtends the selected node to bind to
+				parent <- tree$edge[,1][tree$edge[,2]==bindTo]
+
+				#find the distance between these two nodes. first
+				#set up a temporary matrix and give it row names. this allows you to pull out
+				#the index of the edge in question, and subset the edge.lengths based on that
+				#index, to get needed branch lengths later
+				tempMatrix <- tree$edge
+				rownames(tempMatrix) <- 1:dim(tempMatrix)[1]
+
+				#use the matrix to get the index needed below
+				nodeIndex <- rownames(tempMatrix)[tempMatrix[,1]==parent 
+					& tempMatrix[,2]==bindTo]
+				nodeIndex <- as.numeric(nodeIndex)
+
+				#define the distance to bind as half distance to the parent node
+				bindDist <- tree$edge.length[nodeIndex]/2
+			}
+
+			else if(branch.position=="uniform")
+			{
+				#identify the node that subtends the selected node to bind to
+				parent <- tree$edge[,1][tree$edge[,2]==bindTo]
+
+				#find the distance between these two nodes. first
+				#set up a temporary matrix and give it row names. this allows you to pull out
+				#the index of the edge in question, and subset the edge.lengths based on that
+				#index, to get needed branch lengths later
+				tempMatrix <- tree$edge
+				rownames(tempMatrix) <- 1:dim(tempMatrix)[1]
+
+				#use the matrix to get the index needed below
+				nodeIndex <- rownames(tempMatrix)[tempMatrix[,1]==parent 
+					& tempMatrix[,2]==bindTo]
+				nodeIndex <- as.numeric(nodeIndex)
+
+				#define bindDist as a uniform value between 0 and max. could create polytomies
+				#with code like this, in theory. used to add an offset here to account for that,
+				#but seems like over thinking it. add later if necessary
+				bindDist <- runif(n=1, min=0, max=tree$edge.length[nodeIndex])
+			}
+
+			else if(branch.position=="bd")
+			{
+				#identify the node that subtends the selected node to bind to
+				parent <- tree$edge[,1][tree$edge[,2]==bindTo]
+
+				#find the ages of these nodes. if bindTo is a tip, then its age is 0. create
+				#vector of branching times because you need it either way for age of parent
+				ages <- branching.times(tree)
+
+				if(bindTo <= length(tree$tip.label))
+				{
+					bindToAge <- 0
+				}
+
+				else
+				{
+					bindToAge <- ages[names(ages)==bindTo]
+				}
+
+				parentAge <- ages[names(ages)==parent]
+
+				#use the findRates function to estimate speciation and extinction rates
+				rates <- findRates(tree,
+					prop.complete=length(tree$tip.label)/dim(groupings)[1],
+					ini.lambda=1, ini.mu=0.1)
+
+				#calculate the age of the missing speciation event
+				missingAge <- bdScaler(tree, lambda=rates["lambda"], mu=rates["mu"],
+					min.age=bindToAge, max.age=parentAge)
+
+				#this part is a little tricky. find the distance below bindTo to bind tip in.
+				#add a check here that if bindDist is below the parent node
+				#it sets the age to the parent node. this will create a polytomy
+				bindDist <- missingAge-bindToAge
+
+				if(bindDist > parentAge-bindToAge)
+				{
+					bindDist <- parentAge-bindToAge
+				}
+			}
+
+			else
+			{
+				stop("branch.position must be set to one of 'polytomy', 'midpoint', 'uniform', or 'bd'")
+			}
+
+			#if clade membership table was provided, figure out which clade the bindTo
+			#node belongs to, if any, and update the table accordingly
 			if(!missing(clade.membership))
 			{
-				#identify the clade, if there is one, of the species that will be bound to
-				boundClade <- clade.membership.temp$clade[clade.membership.temp$species==
-					bindingToSpecies]
-				
-				#if bindingToSpecies is not in clade membership temp then boundClade
-				#will have a length of 0
-				if(length(boundClade)==1)
-				{
-					#set the first column of the given row of the tabulations table to the 
-					#species being bound
-					tabulations[j,1] <- possGroupings$species[j]
-					
-					#set the second column to the clade identity of the species to which
-					#it is being bound. 
-					tabulations[j,2] <- boundClade
-					
-					#if you are tabulating things this way, then you need to update the
-					#clade membership input so that we can identify clades at the end of
-					#the process
-					clade.membership.temp <- rbind(clade.membership.temp, tabulations[j,])
-				}
-			}
+				#find all ancestors of bindTo
+				ancestors <- geiger:::.get.ancestors.of.node(node=bindTo, phy=tree)
 
-			#identify the node that subtends the species you selected
-			parent <- new.tree$edge[,1][new.tree$edge[,2]==bindingTo]
+				#find the MRCAs of all named clades
+				mrcas <- unlist(getMRCAs(tree, clade.membership))
 
-			#identify the node that subtends the parent node
-			grandparent <- new.tree$edge[,1][new.tree$edge[,2]==parent]
+				#subset the names of the clades to the hopefully single node that 
+				#represents the crown node of a clade and is considered an ancestor
+				#of bindTo
+				clade <- names(mrcas)[mrcas %in% ancestors]
 
-			#set up a temporary matrix and give it row names. this allows you to pull out
-			#the index of the edge in question, and subset the edge.lengths based on that
-			#index, to get needed branch lengths later
-			tempMatrix <- new.tree$edge
-			rownames(tempMatrix) <- 1:dim(tempMatrix)[1]
+				print(clade)
 
-			#use the matrix to get the index needed below
-			parentIndex <- rownames(tempMatrix)[tempMatrix[,1]==parent 
-				& tempMatrix[,2]==bindingTo]
-			grandparentIndex <- rownames(tempMatrix)[tempMatrix[,1]==grandparent 
-				& tempMatrix[,2]==parent]
-			parentIndex <- as.numeric(parentIndex)
-			grandparentIndex <- as.numeric(grandparentIndex)
-			
-			#find the edge length between the tip species you randomly selected and
-			#its parent node, and the edge length between the parent and grandparent node.
-			#After careful checking, this latter really is the distance between the parent
-			#and grandparent node, as we use the grandparent index to subset the edge
-			#lengths, which are simply lengths, not distance from tip or anything like tht
-			parentDistance <- new.tree$edge.length[parentIndex]
-			grandparentDistance <- new.tree$edge.length[grandparentIndex]
+				#if the length of clade is 0, then the node we are binding the tip to
+				#was not in a named clade. in that case, create a dummy data frame
+				#with clade set to NA, then rbind it to clade.membership
+				if(length(clade) == 0)
+				{
+					toBind <- data.frame(species=toAdd[j,1], clade=NA)
+					clade.membership <- rbind(clade.membership, toBind)
+				}
 
-			#use bind.tip to add in the tip. if only 1 taxon is present in the phylogeny
-			#for the species group in question, the new species has to be bound directly
-			#to this to maintain monophyly			
-			if(bigEnough == 0)
-			{
-				if(branch.position=="midpoint")
-				{
-					new.tree <- bind.tip(tree=new.tree,
-						tip.label=possGroupings$species[j], 
-						where=bindingTo, position=parentDistance/2)
-				}
-				else if(branch.position=="overall")
-				{
-					#scale the distribution of original branching times to the age from
-					#the parent node to the present. to avoid polytomies, it is useful to
-					#subtract a very small constant here. sample from the new distribution
-					#note that you simply move back from the node the sampled distance,
-					#so if a small branch is sampled (likely in many phylogenies), the
-					#branching time will be near the tip. if you sample a long branch
-					#then the branching time will be far in the past.
-					newPositions <- branchScaler(input.vector=tree$edge.length,
-						max.age=parentDistance)
-					newPosition <- sample(newPositions, 1)
-					new.tree <- bind.tip(tree=new.tree,
-						tip.label=possGroupings$species[j], 
-						where=bindingTo, position=newPosition - optional.offset)
-				}
-				else if(branch.position=="uniform")
-				{
-					#scale the distribution of original branching times to the age from
-					#the parent node to the present. to avoid polytomies, it is useful to
-					#add a very small constant here. sample from the new distribution
-					new.tree <- bind.tip(tree=new.tree,
-						tip.label=possGroupings$species[j], 
-						where=bindingTo,
-						position=runif(n=1, min=0, max=parentDistance))
-				}
-				else if(branch.position=="bd")
-				{
-					#generate a new branching position along the relevant branch
-					#according to a birth-death process with corsim. subtract j from the
-					#number of missing taxa such that the number of missing taxa decreases
-					#with each iteration of the nested loop. add 1 so that on the last
-					#iteration there is still one species missing
-					newPosition <- bdScaler(tree=new.tree, lambda=lambda, mu=mu,
-						missing=dim(possGroupings)[1]-j+1, min.age=0,
-						max.age=parentDistance)
-					#REMEMBER that bind.tip will add the new tip at the position BELOW the
-					#tip to which you are binding it. the value coming out of bdScaler
-					#refers to the distance below all the tips, so can pass it directly
-					#in this case
-					new.tree <- bind.tip(tree=new.tree,
-						tip.label=possGroupings$species[j], where=bindingTo, 
-						position=newPosition)
-				}
 				else
 				{
-					stop("Ensure arguments 'branch.position' and 'from.node' are properly specified")
-				}				
+					toBind <- data.frame(species=toAdd[j,1], clade=clade)
+					print(toBind)
+					clade.membership <- rbind(clade.membership, toBind)
+				}
 			}
 
-			#bind new species directly to randomly selected species if "crown" is selected
-			#give the new species a branch length of half the original distance of the
-			#selected species and its parent node
-			else if(bigEnough == 1 & from.nodeUsed == "crown")
-			{
-				if(branch.position=="midpoint")
-				{
-					new.tree <- bind.tip(tree=new.tree,
-						tip.label=possGroupings$species[j], 
-						where=bindingTo, position=parentDistance/2)
-				}
-				else if(branch.position=="overall")
-				{
-					#scale the distribution of original branching times to the age from
-					#the parent node to the present, then sample from it
-					newPositions <- branchScaler(input.vector=tree$edge.length,
-						max.age=parentDistance)
-					newPosition <- sample(newPositions, 1)
-					new.tree <- bind.tip(tree=new.tree,
-						tip.label=possGroupings$species[j], 
-						where=bindingTo, position=newPosition - optional.offset)
-				}
-				else if(branch.position=="uniform")
-				{
-					#scale the distribution of original branching times to the age from
-					#the parent node to the present. to avoid polytomies, it is useful to
-					#add a very small constant here. sample from the new distribution
-					new.tree <- bind.tip(tree=new.tree,
-						tip.label=possGroupings$species[j], 
-						where=bindingTo, 
-						position=runif(n=1, min=0, max=parentDistance))
-				}
-				else if(branch.position=="bd")
-				{
-					#generate a new branching position along the relevant branch
-					#according to a birth-death process with corsim
-					newPosition <- bdScaler(tree=new.tree, lambda=lambda, mu=mu,
-						missing=dim(possGroupings)[1]-j+1, min.age=0,
-						max.age=parentDistance)
-					#REMEMBER that bind.tip will add the new tip at the position BELOW the
-					#tip to which you are binding it. the value coming out of bdScaler
-					#refers to the distance below all the tips, so can pass it directly
-					#in this case
-					new.tree <- bind.tip(tree=new.tree,
-						tip.label=possGroupings$species[j], where=bindingTo, 
-						position=newPosition)
-				}
-				else
-				{
-					stop("Ensure arguments 'branch.position' and 'from.node' are properly specified")
-				}				
-			}
-			
-			#if more than one species is present in group, and if "polytomy" is selected
-			#bind the new species to the parent node and do not assign it any position			
-			else if(bigEnough == 1 & from.nodeUsed == "polytomy")
-			{
-				new.tree <- bind.tip(tree=new.tree, tip.label=possGroupings$species[j],
-					where=bindingTo)
-			}
+			#finally, bind the new tip in
+			tree <- bind.tip(tree=tree, tip.label=toAdd[j,1], where=bindTo,
+				position=bindDist)
+		}
 
-			#bind new species to parent node if "stem" is selected. give it an additional
-			#branch length of half the distance to the grand parent node (phytools will
-			#go ahead and make it ultrametric) if "midpoint" is selected. the workAround
-			#component is how to avoid really wonky weirdnesses with branches being
-			#plotted over other branches when adding stemwards
-			else if(bigEnough == 1 & from.nodeUsed == "stem")
-			{
-				if(branch.position=="midpoint")
-				{
-					new.tree <- bind.tip(tree=new.tree,
-						tip.label=possGroupings$species[j],
-						where=parent, position=grandparentDistance/2)
-					workAround <- write.tree(new.tree)
-					new.tree <- read.newick(text=workAround)
-				}
-				else if(branch.position=="overall")
-				{
-					#scale the distribution of original branching times to the age between
-					#the grandparent and parent nodes, then sample from it
-					newPositions <- branchScaler(input.vector=tree$edge.length,
-						max.age=grandparentDistance)
-					newPosition <- sample(newPositions, 1)
-					new.tree <- bind.tip(tree=new.tree,
-						tip.label=possGroupings$species[j], 
-						where=parent, position=newPosition - optional.offset)
-					workAround <- write.tree(new.tree)
-					new.tree <- read.newick(text=workAround)
-				}
-				else if(branch.position=="uniform")
-				{
-					#scale the distribution of original branching times to the age from
-					#the parent node to the present. to avoid polytomies, it is useful to
-					#add a very small constant here. sample from the new distribution
-					new.tree <- bind.tip(tree=new.tree,
-						tip.label=possGroupings$species[j], 
-						where=parent,
-						position=runif(n=1, min=0, max=grandparentDistance))
-					workAround <- write.tree(new.tree)
-					new.tree <- read.newick(text=workAround)
-				}
-				else if(branch.position=="bd")
-				{
-					#generate a new branching position along the relevant branch
-					#according to a birth-death process with corsim. for max.age add
-					#grandparent to parentDistance
-					newPosition <- bdScaler(tree=new.tree, lambda=lambda, mu=mu,
-						missing=dim(possGroupings)[1]-j+1, min.age=parentDistance,
-						max.age=parentDistance + grandparentDistance)
-					new.tree <- bind.tip(tree=new.tree,
-						tip.label=possGroupings$species[j], where=parent, 
-						position=newPosition-parentDistance)
-					workAround <- write.tree(new.tree)
-					new.tree <- read.newick(text=workAround)
-				}
-				else
-				{
-					stop("Ensure arguments 'branch.position' and 'from.node' are properly specified")
-				}				
-			}
-		}		
-		#add the last version of new tree in as a new element in the list of random, 
-		#final trees
-		random.trees[[i]] <- new.tree
+		#save the complete tree as an element in the list object. do same for
+		#clade membership if it exists
+		trees[[i]] <- tree
 		
 		if(!missing(clade.membership))
 		{
-			clade.memberships[[i]] <- clade.membership.temp
+			clade.tables[[i]] <- clade.membership
 		}
+		
+		else
+		{
+			clade.tables[[i]] <- "clade.membership table not provided"
+		}
+		
+		#set tree back to original tree
+		tree <- origTree
 	}
-
-	class(random.trees) <- "multiPhylo"
-	taxaAddResults <- list("trees"=random.trees, "clade.memberships"=clade.memberships)
-
-	if(missing(file.name))
-	{
-		return(taxaAddResults)
-	}
-	else
-	{
-		save(taxaAddResults, file=file.name)
-		print("Results saved to working directory")
-	}
+	
+	#set the class of trees to multiPhylo, bind with clade.tables and return
+	class(trees) <- "multiPhylo"
+	results <- list(trees=trees, clade.tables=clade.tables)
+	results
 }

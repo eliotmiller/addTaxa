@@ -6,7 +6,6 @@
 #' @param tree An ape-style phylogenetic tree
 #' @param groupings A data frame with two columns, "species" and "group". Missing species,
 #' to be added, are taken as those that do not match a value in the tip labels of tree.
-#' @param print.to.screen Logical. Will print a list of the missing taxa to screen.
 #' 
 #' @details Utility function to identify taxa in the groupings data frame that are not
 #' included in the input phylogeny.
@@ -36,9 +35,9 @@
 #'
 #' #use the function to see what was missing from the original tree as compared with the 
 #' #new data frame
-#' identifyMissing(bird.families, groupsDF, print.to.screen=TRUE)
+#' identifyMissing(bird.families, groupsDF)
 
-identifyMissing <- function(tree, groupings, print.to.screen)
+identifyMissing <- function(tree, groupings)
 {
 	#set the species and group to character vectors
 	groupings$species <- as.character(groupings$species)
@@ -46,12 +45,6 @@ identifyMissing <- function(tree, groupings, print.to.screen)
 
 	#subset the groupings data frame to those spp we only have taxonomic information for
 	results <- groupings[!(groupings$species %in% tree$tip.label), ]
-
-	if(print.to.screen==TRUE)
-	{
-		print("You are missing phylogenetic information for these species:", quote=FALSE)
-		print(results$species, quote=FALSE)
-	}
 	
 	results
 }
