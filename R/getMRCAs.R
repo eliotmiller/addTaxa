@@ -48,6 +48,7 @@ getMRCAs <- function(tree, clade.membership)
 	{
 		#important that this is a character vector
 		cladeSpp <- as.character(clade.membership$species[clade.membership$clade == clades[[i]]])
+
 		#the function getMRCA does not work for single species clades, so need to just get
 		#node of this species
 		if(length(cladeSpp) == 1)

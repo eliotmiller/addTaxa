@@ -24,23 +24,24 @@ Utility function to identify taxa in the groupings data frame that are not
 included in the input phylogeny.
 }
 \examples{
-#load a molecular tree up
-data(bird.families)
+data(chelonia)
+tree <- chelonia$phy
 
-#create a data frame of all taxa from the phylogeny, and make up species groups
-#for each.
-dummy.frame <- data.frame(species=bird.families$tip.label, 
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), 
-rep("oscine", 20)))
+#some species in this tree are identified to subspecies. drop those
+temp <- lapply(strsplit(tree$tip.label, "_"), length)
+names(temp) <- tree$tip.label
+temp <- temp[temp==2]
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))
 
-#now make up a few passerine taxa that are missing and add these into the dummy frame
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), 
-group=c(rep("oscine", 2), rep("basalOscine", 2)))
-groupsDF <- rbind(dummy.frame, toAdd)
+#create an example groupings data frame.
+groupsDF <- data.frame(species=tree$tip.label)
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))
 
-#use the function to see what was missing from the original tree as compared with the 
-#new data frame
-identifyMissing(bird.families, groupsDF)
+#use the function to drop 100 species (that is over half the species)
+example <- tipDropper(tree, groupsDF, 100)
+
+#identify missing species
+identifyMissing(example, groupsDF)
 }
 \references{
 Mast et al. 2015. Paraphyly changes understanding of timing and tempo of 

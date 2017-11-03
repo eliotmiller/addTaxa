@@ -8,32 +8,53 @@
 #' @param tree An ape-style phylogenetic tree
 #' @param groupings A data frame with two columns, "species" and "group". Missing species,
 #' to be added, are taken as those that do not match a value in the tip labels of tree.
-#' @param from.node Whether species should be added in a "polytomy" with, "crown" (more 
-#' recently diverged), "stem" (previously diverged), or "randomly" crown-wards or
-#' stem-wards from the tip they are bound to.
+#' @param branch.position
+#' Once the algorithm has selected to which node a species will
+#' be bound, this determines where on the branch that happens. Note that this refers to
+#' the position below (stemwards) from the node the tip will be bound.Currently there are
+#' four options. The first, "polytomy", creates a polytomy at the node to which the new
+#' tip is added (need to check but it might actually make a dichotomous branch of length 0).
+#' The second, "midpoint", simply splits the difference between the node and its parent
+#' and binds the new tip in there.
+#' The third, "uniform", will sample from a uniform distribution with a minimum of
+#' zero and a maximum of the full distance between the node and its parent. Note that
+#' this means that species can conceivably be added at the maximum or minimum
+#' distance possible from the tip, which would create a polytomy (or branch of length 0?).
+#' I have removed checks to account and deal with this--if you need them back let me know. 
+#' The fourth option is
+#' "bd." This uses the corsim function from the TreeSim package to simulate the missing
+#' speciation events according to speciation (lambda) and extinction (mu) values passed
+#' to addTaxa. 
+#' @param ini.lambda Initial speciation value for the "bd" optimization, if that option
+#' of branch position is chosen. Defaults to 1.
+#' @param ini.mu Initial extinction value for the "bd" optimization, if that option
+#' of branch position is chosen. Defaults to 0.1.
+#' @param no.trees The number of desired final trees with all missing species from 
+#' groupings added.
 #' @param clade.membership An optional data frame with first column = "species", second
 #' column = "clade". These are named, monophyletic clades to which the species in the
 #' input phylogeny can belong. Not every species in the input phylogeny needs to be in the
 #' clade membership data frame, but missing species added to species not in this frame
-#' will not be included in the output clade membership data frame. They will of course
-#' still be included in the output phylogenies.
+#' will not be included in the output clade membership data frame. Such species will
+#' still be included in the output phylogenies. Note that these clades need to be
+#' mutually exclusive. For example, clade 2 cannot be contained within clade 1.
 #' @param crown.can.move Logical. If TRUE, and if missing taxa are to be added stemwards,
 #' this will allow the age of the crown group to potentially shift back in time. If FALSE,
 #' and if missing taxa were to be added stemwards, this will prevent taxa from being added
-#' below the crown group. It will force these to be bound crownwards if the "basal"
-#' taxon in the clade is selected as the species to be bound to. Note that the argument
+#' below the crown group. It will force these to be bound crownwards if the crown node
+#' in the clade is selected to be bound to. Note that the argument
 #' name is somewhat misleading in that the crown ages can still shift when missing taxa
-#' are added. Specifically, if missing taxa are bound to single-species clades, then the
+#' are added. Specifically, if missing taxa are bound to what were initially
+#' single-species clades in the input tree, then the
 #' crown age will "shift" forward in time (the single-taxon clade did not actually have a 
-#' crown age).
+#' crown age). If crown.can.move is set to FALSE, then after one taxon is added to such a
+#' single-species clade, the crown age of that clade then becomes fixed and will not move.
 #' @param calc.from.crown Whether the crown or stem method of bd.ms from geiger will be
 #' used.
 #' @param epsilon The extinction rate parameter for bd.ms
-#' @param no.trees The number of complete trees across which the user would like to test
-#' the diversification rate sensitivity. 
 #' 
 #' @details Adds missing taxa according to all rules and details outlined in
-#' randomlyAddTaxa(). During this process, it tabulates to which named clades missing
+#' addTaxa(). During this process, it tabulates to which named clades missing
 #' species are added, and calculates the diversification rate of each clade after each
 #' complete tree is created. In this way, the sensitivity of these absolute
 #' diversification rates to missing taxa can be assessed.
@@ -48,41 +69,43 @@
 #' American Journal of Botany.
 #'
 #' @examples
-#' #load a molecular tree up. resolve polytomies
-#' data(bird.families)
-#' bird.families <- multi2di(bird.families)
+#' data(chelonia)
+#' tree <- chelonia$phy
 #'
-#' #create a data frame of all taxa from the phylogeny, and make up species groups
-#' #for each.
-#' dummyGroups <- data.frame(species=bird.families$tip.label, 
-#' group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), 
-#' rep("oscine", 20)))
-#' 
-#' #now make up a few passerine taxa that are missing and add these into the dummy frame
-#' toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), 
-#' group=c(rep("oscine", 2), rep("basalOscine", 2)))
-#' groupsDF <- rbind(dummyGroups, toAdd)
+#' #some species in this tree are identified to subspecies. drop those
+#' temp <- lapply(strsplit(tree$tip.label, "_"), length)
+#' names(temp) <- tree$tip.label
+#' temp <- temp[temp==2]
+#' tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))
 #'
-#' #these groups were actually monophyletic. but make a slightly more detailed clade
-#' #membership frame to see how one would be used. note that it doesn't include the
-#' #missing taxa, and taxonomy does not exactly follow modern understanding
-#' cladesDF <- data.frame(species=bird.families$tip.label, 
-#' clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),
-#' rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))
+#' #create an example groupings data frame.
+#' groupsDF <- data.frame(species=tree$tip.label)
+#' groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))
 #'
-#' #examples of changing the from.node argument. you can plot or write these trees out to
-#' #better see what the differences are
-#' test <- divRateSensitivity(tree=bird.families, groupings=groupsDF, from.node="crown", 
-#' 	clade.membership=cladesDF, crown.can.move=TRUE, calc.from.crown=TRUE, epsilon=0,
-#'	no.trees=10)
+#' #and create a dummy data frame to pay attention to diversification rates
+#' #of two arbitrary clades
+#' graptemysEtc <- data.frame(
+#'   species=groupsDF$species[groupsDF$group %in% c("Graptemys","Trachemys","Malaclemys")],
+#'   clade="graptemys")
+#' gopherus <- data.frame(species=tree$tip.label[grep("Gopherus", tree$tip.label)],
+#'   clade="gopherus")
+#' cladesDF <- rbind(graptemysEtc, gopherus)
+#'
+#' #drop species, add them back in and see how diversification rates of those clades
+#' #change
+#' example <- tipDropper(tree, groupsDF, 10)
+#'
+#' sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",
+#'   no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE,
+#'   calc.from.crown=TRUE, epsilon=0.1)
 
-divRateSensitivity <- function(tree, groupings, from.node, clade.membership,
-	crown.can.move, calc.from.crown, epsilon, no.trees)
+divRates <- function(tree, groupings, branch.position, ini.lambda=1,
+	ini.mu=0.1, no.trees, clade.membership, crown.can.move, calc.from.crown, epsilon)
 {
 	#generate your complete trees and updated tables of to which clade each sp belongs
-	treesNtables <- randomlyAddTaxa(tree=tree, groupings=groupings, 
-		from.node=from.node, clade.membership=clade.membership, crown.can.move, 
-		no.trees=no.trees, print.to.screen=FALSE)
+	treesNtables <- addTaxa(tree=tree, groupings=groupings, 
+		branch.position=branch.position, ini.lambda=ini.lambda, ini.mu=ini.mu,
+		no.trees=no.trees, clade.membership=clade.membership, crown.can.move)
 	#lapply your getMRCAs function over these complete trees and tables. you will get a
 	#list of lists of most recent common ancestors for each named clade
 	mrcas <- lapply(1:length(treesNtables[[1]]), function(x) 

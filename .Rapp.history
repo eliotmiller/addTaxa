@@ -1,4 +1,213 @@
-head(dummy.frame)
+test <- randomlyAddTaxa(mast, groupsDF, branch.position="midpoint",#
+ 	ini.lambda=1, ini.mu=0.1, no.trees=1,#
+ 	clade.membership=namedClades, crown.can.move=FALSE)
+document()
+test2 <- randomlyAddTaxa(mast, groupsDF, branch.position="midpoint",#
+ 	ini.lambda=1, ini.mu=0.1, no.trees=1,#
+ 	clade.membership=namedClades, crown.can.move=FALSE)
+getwd()
+document()
+test2 <- randomlyAddTaxa(mast, groupsDF, branch.position="midpoint",#
+ 	ini.lambda=1, ini.mu=0.1, no.trees=1,#
+ 	clade.membership=namedClades, crown.can.move=FALSE)
+document()
+randomlyAddTaxa
+test2 <- randomlyAddTaxa(mast, groupsDF, branch.position="midpoint",#
+ 	ini.lambda=1, ini.mu=0.1, no.trees=1,#
+ 	clade.membership=namedClades, crown.can.move=FALSE)
+tree <- readRDS("treeHere.RDS")
+tree
+clades
+clades <- readRDS("cladeHere.RDS")
+head(cladeHere)
+head(clades)
+tail(clades)
+getMRCAs(tree, clades)
+document()
+getMRCAs(tree, clades)
+getMRCAs(tree, clades)
+#load the tree and groupings files#
+groupsDF <- read.csv("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/hak_groupings_all.csv")#
+mast <- read.tree("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/mast.tre")#
+namedClades <- read.csv("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/namedClades.csv")
+ls()
+rm(list=ls())
+document()
+document()
+#load the tree and groupings files#
+groupsDF <- read.csv("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/hak_groupings_all.csv")#
+mast <- read.tree("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/mast.tre")#
+namedClades <- read.csv("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/namedClades.csv")
+test2 <- randomlyAddTaxa(mast, groupsDF, branch.position="midpoint",#
+ 	ini.lambda=1, ini.mu=0.1, no.trees=1,#
+ 	clade.membership=namedClades, crown.can.move=FALSE)
+test2
+quickResults <- divRateSensitivity(mast, groupsDF, branch.position="midpoint",#
+	ini.lambda=1, ini.mu=0.1, no.trees=3,#
+	clade.membership=namedClades, crown.can.move=FALSE, calc.from.crown=TRUE, #
+	epsilon=0.1)
+quickResults
+quickResults <- divRateSensitivity(mast, groupsDF, branch.position="midpoint",#
+	ini.lambda=1, ini.mu=0.1, no.trees=3,#
+	clade.membership=namedClades, crown.can.move=TRUE, calc.from.crown=TRUE, #
+	epsilon=0.1)
+quickResults
+quickResults <- divRateSensitivity(mast, groupsDF, branch.position="midpoint",#
+	ini.lambda=1, ini.mu=0.1, no.trees=3,#
+	clade.membership=namedClades, crown.can.move=TRUE, calc.from.crown=TRUE, #
+	epsilon=0)
+quickResults
+test2
+test2[[2]]
+head(test2[[2]])
+head(test2[[2]][[1]])
+test2[[2]][[1]][test2[[2]][[1]]$clade=="clade5"]
+test2[[2]][[1]][test2[[2]][[1]]$clade=="clade5",]
+test2[[2]][[1]][test2[[2]][[1]]$clade=="clade8",]
+test2[[1]][[1]]
+write.tree(test2[[1]][[1]], "test.tre")
+mrcas <- unlist(getMRCAs(test2[[1]][[1]], test2[[2]][[1]]))
+mrcas
+allDesc <- lapply(mrcas, function(x)#
+					geiger:::.get.descendants.of.node(node=x, phy=test2[[1]][[1]]))
+allDesc
+is.null(allDesc)
+lapply(allDesc, is.null)
+allDesc
+anyMatches <- lapply(allDesc, function(x) x[x==526])
+anyMatches
+names(unlist(anyMatches))
+geiger:::.get.descendants.of.node(node=526, phy=test2[[1]][[1]])
+geiger:::.get.descendants.of.node(node=526, phy=test2[[1]][[1]], tips=TRUE)
+geiger:::.get.descendants.of.node(node=509, phy=test2[[1]][[1]], tips=TRUE)
+mrcas
+geiger:::.get.descendants.of.node(node= 1036, phy=test2[[1]][[1]], tips=TRUE)
+geiger:::.get.descendants.of.node(node= 1036, phy=test2[[1]][[1]])
+geiger:::.get.descendants.of.node(node= 1036, phy=test2[[1]][[1]], tips=FALSE)
+geiger:::.get.descendants.of.node(node=526, phy=test2[[1]][[1]], tips=FALSE)
+anyMatches
+anyMatches[lapply(anyMatches, is.null)]
+anyMatches[[lapply(anyMatches, is.null)]]
+mrcas
+unlist(anyMatches)
+anyMatches
+allDesc
+mrcas[!is.na(allDesc)]
+allDesc[!is.na(allDesc)]
+allDesc[is.null(allDesc)]
+allDesc[is.null(allDesc),]
+is.null(allDesc)
+allDesc[c(TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE)]
+lapply(allDesc, is.null)
+allDesc[lapply(allDesc, is.null)]
+allDesc[c(lapply(allDesc, is.null))]
+allDesc[unlist(lapply(allDesc, is.null))]
+mrcas[unlist(lapply(allDesc, is.null))]
+rm(list=ls())
+document()
+document()
+#this script will put addTaxa through some tests, and see if this new version#
+#can successfully handle the old analysis you did for Austin#
+#
+#start the dev version of add taxa#
+library(devtools)#
+setwd("~/Documents/MyRCode/addTaxa")#
+load_all()#
+#
+#load the tree and groupings files#
+groupsDF <- read.csv("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/hak_groupings_all.csv")#
+mast <- read.tree("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/mast.tre")#
+namedClades <- read.csv("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/namedClades.csv")#
+#
+quickResults <- divRateSensitivity(mast, groupsDF, branch.position="midpoint",#
+	ini.lambda=1, ini.mu=0.1, no.trees=3,#
+	clade.membership=namedClades, crown.can.move=FALSE, calc.from.crown=TRUE, #
+	epsilon=0.1)
+quickResults
+#this script will put addTaxa through some tests, and see if this new version#
+#can successfully handle the old analysis you did for Austin#
+#
+#start the dev version of add taxa#
+library(devtools)#
+setwd("~/Documents/MyRCode/addTaxa")#
+load_all()#
+#
+#load the tree and groupings files#
+groupsDF <- read.csv("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/hak_groupings_all.csv")#
+mast <- read.tree("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/mast.tre")#
+namedClades <- read.csv("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/namedClades.csv")#
+#
+quickResults <- divRateSensitivity(mast, groupsDF, branch.position="midpoint",#
+	ini.lambda=1, ini.mu=0.1, no.trees=10,#
+	clade.membership=namedClades, crown.can.move=FALSE, calc.from.crown=FALSE, #
+	epsilon=0)
+quickResults
+#this script will put addTaxa through some tests, and see if this new version#
+#can successfully handle the old analysis you did for Austin#
+#
+#start the dev version of add taxa#
+library(devtools)#
+setwd("~/Documents/MyRCode/addTaxa")#
+load_all()#
+#
+#load the tree and groupings files#
+groupsDF <- read.csv("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/hak_groupings_all.csv")#
+mast <- read.tree("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/mast.tre")#
+namedClades <- read.csv("~/Documents/Work/PostDoc/HakeinaeProject/MillerEtAl/data/namedClades.csv")#
+#
+quickResults <- divRateSensitivity(mast, groupsDF, branch.position="midpoint",#
+	ini.lambda=1, ini.mu=0.1, no.trees=5,#
+	clade.membership=namedClades, crown.can.move=FALSE, calc.from.crown=TRUE, #
+	epsilon=0)
+quickResults
+rm(list=ls())
+ls()
+document()
+check()
+?`:::`
+?:::
+ls()
+document()
+data(chelonia)
+ls()
+chelonia
+str(chelonia)
+chelonia$phy
+chelonia$phy$tip.label
+tree <- data(chelonia)$phy
+tree <- chelonia$phy
+tree
+lapply(strsplit(tree$tip.label, "_"), length)
+temp <- lapply(strsplit(tree$tip.label, "_"), length)
+names(temp) <- tree$tip.label
+temp[temp==2]
+temp[temp==3]
+temp <- lapply(strsplit(tree$tip.label, "_"), length)
+temp <- temp[temp==2]
+temp <- lapply(strsplit(tree$tip.label, "_"), length)
+names(temp) <- tree$tip.label
+temp <- temp[temp==2]
+temp
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp))
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))
+tree
+tree <- chelonia$phy
+tree
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))
+tree
+plot(tree,cex=0.2)
+groupsDF <- data.frame(species=tree$tip.label)
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))
+head(groupsDF)
+example <- tipDropper(tree, groupsDF, 20)
+example
+document()
+addTaxa
+document()
+document()
+document()
+document()
+?getMRCAs
 data(bird.families)#
 #
 #create a data frame of all taxa from the phylogeny, and make up clade memberships#
@@ -10,7 +219,334 @@ rep("oscine", 20)))#
 #
 #use the function#
 getMRCAs(bird.families, dummy.frame)
+document()
+?addTaxa
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=tree, groupings=groupsDF, branch.position="bd",#
+  no.trees=1)
+tree
+dim(groupsDF)
+head(groupsDF)
+identifyMissing(tree, groupsDF)
+document()
+?addTaxa
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 20 species#
+example <- tipDropper(tree, groupsDF, 20)#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=1)
+newTrees
+newTrees$trees[[1]]
+plot(newTrees$trees[[1]])
+plot(newTrees$trees[[1]], cex=0.2)
+plot(ladderize(newTrees$trees[[1]]), cex=0.2)
+quartz()
+plot(ladderize(tree, cex=0.2)
+plot(ladderize(tree), cex=0.2)
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 20 species#
+example <- tipDropper(tree, groupsDF, 40)#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=1)
+quartz()
+plot(ladderize(newTrees$trees[[1]]), cex=0.2)
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 20 species#
+example <- tipDropper(tree, groupsDF, 80)#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=1)
+example
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 20 species#
+example <- tipDropper(tree, groupsDF, 200)#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=1)
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 20 species#
+example <- tipDropper(tree, groupsDF, 100)#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=1)
+tree
+example
+plot(ladderize(newTrees$trees[[1]]), cex=0.2)
+plot(ladderize(newTrees$trees[[1]]), cex=0.2)
+plot(ladderize(tree), cex=0.2)
+quartz()
+plot(ladderize(newTrees$trees[[1]]), cex=0.2)
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 20 species#
+example <- tipDropper(tree, groupsDF, 100)#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="midpoint",#
+  no.trees=1)
+plot(ladderize(newTrees$trees[[1]]), cex=0.2)
+document()
+?addTaxa
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 100 species#
+example <- tipDropper(tree, groupsDF, 100)#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=1)
+dist.topo(tree, newTrees[[1]][[1]])
+dist.topo(tree, tree)
+dist.topo(tree, tree, "score")
+dist.topo(tree, newTrees[[1]][[1]], "score")
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 100 species#
+example <- tipDropper(tree, groupsDF, 100)#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="uniform",#
+  no.trees=1)
+dist.topo(tree, newTrees[[1]][[1]], "score")
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 100 species#
+example <- tipDropper(tree, groupsDF, 3)#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="uniform",#
+  no.trees=1)
+dist.topo(tree, newTrees[[1]][[1]], "score")
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 100 species#
+example <- tipDropper(tree, groupsDF, 3)#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=1)
+dist.topo(tree, newTrees[[1]][[1]], "score")
+cophyloplot(tree, newTrees[[1]][[1]])
+cophylo(tree, newTrees[[1]][[1]])
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 100 species#
+example <- tipDropper(tree, groupsDF, 20)#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=1)
+cophylo(tree, newTrees[[1]][[1]])->temp
+temp
+temp[[1]]
+plot(temp)
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 100 species#
+example <- tipDropper(tree, groupsDF, 100)#
+#
+#add those missing species back in#
+newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=1)
+cophylo(tree, newTrees[[1]][[1]])->temp
+plot(temp)
+rm(list=ls())
+document
+document()
+?bdScaler
 data(bird.families)#
+#
+bdScaler(bird.families, lambda=1, mu=0, min.age=0, max.age=10)
+?findRates
+data(bird.families)#
+#
+tree <- multi2di(bird.families)#
+#
+findRates(tree, 0.95)
+document()
+?identifyMissing
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#use the function to drop 100 species (that is over half the species)#
+example <- tipDropper(tree, groupsDF, 100)#
+#
+#identify missing species#
+identifyMissing(example, groupsDF)
+?extractClade
+data(bird.families)#
+#
+#define a named vector of node numbers, including a root#
+temp <- c()#
+temp[1] <- length(bird.families$tip.label) + 1#
+names(temp) <- "root"#
 #
 #create a data frame of all taxa from the phylogeny, and make up clade memberships#
 #for each. note that the names on this data frame differ from "groupings" in other#
@@ -19,1062 +555,253 @@ dummy.frame <- data.frame(species=bird.families$tip.label, #
 clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
 rep("oscine", 20)))#
 #
-#use the function#
-temp <- unlist(getMRCAs(bird.families, dummy.frame))
-temp
-temp[[1]]
-temp
-temp2 <- 10
-names(temp2) <- root
-names(temp2) <- "root"
-c(temp, temp2)
-temp
-temp[temp == temp2]
-temp[temp %in% temp2]
-length(temp[temp == temp2])
-length(temp[temp == 242])
-ancestors()
-geiger:::.get.ancestors.of.node(node=10,#
-						phy=tree)
-geiger:::.get.ancestors.of.node(node=10,#
-						phy=bird.families)
-mrcas
-temp2
-temp
-names(temp)[temp==138]
-names(temp)[temp==133]
-length(names(temp)[temp==133])
-length(names(temp)[temp==138])
-length(names(temp)[temp %in% c(133,138)])
-names(temp)[temp %in% c(133,138)]
-names(temp)[temp %in% c(133,138,122)]
-clade
-dummyFrame
-ls()
-bird.families
-test
-test2 <- list()
-test2[[1]]
-test2[[1]] <- bird.families
-test2[[2]] <- bird.families
-test2
-class(test2) <- "multiPhylo"
-test2
-document()
-document()
-document()
-document()
-?randomlyAddTaxa
+#use the function getMRCAs() to determine the nodes subtending these named clades#
+nodes <- getMRCAs(bird.families, dummy.frame)#
+#unlist the results and append to the root node defined above#
+nodes <- append(temp, nodes)#
+#
+#use the function. note the effect of including a root edge or not. also note that #
+#because non-passerines are not monophyletic, the "subtree" corresponding to that#
+#"clade" is the whole tree#
+temp1 <- extractClade(bird.families, nodes)#
+temp2 <- extractClade(bird.families, nodes, root.edge=1)#
+plot(temp1$oscine, root.edge=TRUE)
+plot(temp2$oscine, root.edge=TRUE)
+?singleSpeciesTree
 data(bird.families)#
-bird.families <- multi2di(bird.families)#
 #
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
+#extract a single-species tree#
+tree <- singleSpeciesTree(bird.families, "Rheidae")
+tree
+rm(list=ls())
+?addTaxa
+data(chelonia)#
+tree <- chelonia$phy#
 #
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2)))#
-groupsDF <- rbind(dummyGroups, toAdd)#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
 #
-#these groups were actually monophyletic. but make a slightly more detailed clade#
-#membership frame to see how one would be used. note that it doesn't include the#
-#missing taxa, and taxonomy does not exactly follow modern understanding#
-cladesDF <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
-rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-crown <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF, from.node="crown", #
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))
+plot(tree,cex=0.1)
+plot(tree,cex=0.2)
 document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
+?divRates
+data(chelonia)#
+tree <- chelonia$phy#
 #
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
 #
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2)))#
-groupsDF <- rbind(dummyGroups, toAdd)#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
 #
-#these groups were actually monophyletic. but make a slightly more detailed clade#
-#membership frame to see how one would be used. note that it doesn't include the#
-#missing taxa, and taxonomy does not exactly follow modern understanding#
-cladesDF <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
-rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-crown <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF, from.node="crown", #
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-?randomlyAddTaxa
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2)))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#these groups were actually monophyletic. but make a slightly more detailed clade#
-#membership frame to see how one would be used. note that it doesn't include the#
-#missing taxa, and taxonomy does not exactly follow modern understanding#
-cladesDF <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
-rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-crown <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-crown
-str(crown)
-all.equal(crown$clade.tables[[1]],crown$clade.tables[[2]])
-all.equal(crown$clade.tables[[1]],crown$clade.tables[[3]])
-all.equal(crown$clade.tables[[1]],crown$clade.tables[[4]])
-all.equal(crown$trees[[1]],crown$trees[[4]])
-crown$trees[[1]]
-crown$trees[[4]]
-all.equal(crown$trees[[1]],crown$trees[[1]])
-dim(cladesDF)
-dim(groupsDF)
-dim(crown$clade.tables[[1]])
+#and create a dummy data frame to pay attention to diversification rates#
+#of two arbitrary clades#
+graptemys <- data.frame(species=tree$tip.label[grep("Graptemys", tree$tip.label)],#
+  clade="graptemys")
+graptemys
 document()
+?divRates
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#and create a dummy data frame to pay attention to diversification rates#
+#of two arbitrary clades#
+graptemys <- data.frame(species=tree$tip.label[grep("Graptemys", tree$tip.label)],#
+  clade="graptemys")#
+gopherus <- data.frame(species=tree$tip.label[grep("Gopherus", tree$tip.label)],#
+  clade="gopherus")#
+cladesDF <- rbind(graptemys, gopherus)#
+#
+#drop species, add them back in and see how diversification rates of those clades#
+#change#
+example <- tipDropper(tree, groupsDF, 100)#
+#
+sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE,#
+  calc.from.crown=TRUE, epsilon=0.1)
 document()
-?randomlyAddTaxa
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
+?divRates
+data(chelonia)#
+tree <- chelonia$phy#
 #
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
 #
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2)))#
-groupsDF <- rbind(dummyGroups, toAdd)#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
 #
-#these groups were actually monophyletic. but make a slightly more detailed clade#
-#membership frame to see how one would be used. note that it doesn't include the#
-#missing taxa, and taxonomy does not exactly follow modern understanding#
-cladesDF <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
-rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
+#and create a dummy data frame to pay attention to diversification rates#
+#of two arbitrary clades#
+graptemys <- data.frame(species=tree$tip.label[grep("Graptemys", tree$tip.label)],#
+  clade="graptemys")#
+gopherus <- data.frame(species=tree$tip.label[grep("Gopherus", tree$tip.label)],#
+  clade="gopherus")#
+cladesDF <- rbind(graptemys, gopherus)#
 #
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
+#drop species, add them back in and see how diversification rates of those clades#
+#change#
+example <- tipDropper(tree, groupsDF, 10)#
 #
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
+sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE,#
+  calc.from.crown=TRUE, epsilon=0.1)
+rm(list=ls())
+data(chelonia)#
+tree <- chelonia$phy#
 #
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2)))#
-groupsDF <- rbind(dummyGroups, toAdd)#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
 #
-#these groups were actually monophyletic. but make a slightly more detailed clade#
-#membership frame to see how one would be used. note that it doesn't include the#
-#missing taxa, and taxonomy does not exactly follow modern understanding#
-cladesDF <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
-rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
 #
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
+#and create a dummy data frame to pay attention to diversification rates#
+#of two arbitrary clades#
+graptemys <- data.frame(species=tree$tip.label[grep("Graptemys", tree$tip.label)],#
+  clade="graptemys")#
+gopherus <- data.frame(species=tree$tip.label[grep("Gopherus", tree$tip.label)],#
+  clade="gopherus")#
+cladesDF <- rbind(graptemys, gopherus)#
 #
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
+#drop species, add them back in and see how diversification rates of those clades#
+#change#
+example <- tipDropper(tree, groupsDF, 10)#
 #
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2)))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#these groups were actually monophyletic. but make a slightly more detailed clade#
-#membership frame to see how one would be used. note that it doesn't include the#
-#missing taxa, and taxonomy does not exactly follow modern understanding#
-cladesDF <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
-rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2)))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#these groups were actually monophyletic. but make a slightly more detailed clade#
-#membership frame to see how one would be used. note that it doesn't include the#
-#missing taxa, and taxonomy does not exactly follow modern understanding#
-cladesDF <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
-rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2)))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#these groups were actually monophyletic. but make a slightly more detailed clade#
-#membership frame to see how one would be used. note that it doesn't include the#
-#missing taxa, and taxonomy does not exactly follow modern understanding#
-cladesDF <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
-rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2)))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#these groups were actually monophyletic. but make a slightly more detailed clade#
-#membership frame to see how one would be used. note that it doesn't include the#
-#missing taxa, and taxonomy does not exactly follow modern understanding#
-cladesDF <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
-rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2)))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#these groups were actually monophyletic. but make a slightly more detailed clade#
-#membership frame to see how one would be used. note that it doesn't include the#
-#missing taxa, and taxonomy does not exactly follow modern understanding#
-cladesDF <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
-rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2)))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#these groups were actually monophyletic. but make a slightly more detailed clade#
-#membership frame to see how one would be used. note that it doesn't include the#
-#missing taxa, and taxonomy does not exactly follow modern understanding#
-cladesDF <- data.frame(species=bird.families$tip.label, #
-clade=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscineOther", 6),#
-rep("basalOscineCore", 7), rep("oscineBase", 14), rep("oscineDerived", 6)))#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-getMRCAs(bird.famililes, cladesDF)
-getMRCAs(bird.families, cladesDF)
-plot(bird.families)
-nodelabels(unlist(names(getMRCAs(bird.families, cladesDF))), node=unlist(getMRCAs(bird.families, cladesDF)))
-plot(bird.families)
-nodelabels(unlist(names(getMRCAs(bird.families, cladesDF))), node=unlist(getMRCAs(bird.families, cladesDF)))
-plot(bird.families, cex=0.3)
-plot(ladderize(bird.families), cex=0.3)
-?document()
-document()
-?randomlyAddTaxa
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("nonPasserine", 95), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)
-toAdd
-bird.families$tip.label
-document()
-?randomlyAddTaxa
-#load a molecular tree up. resolve polytomies#
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, #
-group=c(rep("ratite", 5), rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), #
-rep("oscine", 20)))
-head(dummyGroups)
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)
-groupsDF
-?document
-document()
-?randomlyAddTaxa
-document()
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5), rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))
-dummyGroups
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))
-toAdd
-document()
-document()
-?randomlyAddTaxa
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)
-groupsDF
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"
+sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE,#
+  calc.from.crown=TRUE, epsilon=0.1)
 cladesDF
-document()
-?randomlyAddTaxa
-#load a molecular tree up. resolve polytomies#
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscines",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"
-cladesDF
-document()
-?randomlyAddTaxa
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"
-cladesDF
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-? is.monophyletic
-cladesDF
-split(cladesDF, clade)
-split(cladesDF, cladesDF$clade)
-cladesDF[,1] <- as.character(cladesDF[,1])
-cladesDF[,2] <- as.character(cladesDF[,2])
-split(cladesDF, cladesDF$clade)
-split(cladesDF, cladesDF$clade)->temp
-tes
-test
-ls()
-crown
-ls()
-split(cladesDF, cladesDF$clade)->temp
-temp
-lapply(temp, function(x) is.monophyletic(bird.families, x$species))
-unlist(lapply(temp, function(x) is.monophyletic(bird.families, x$species)))
-any(unlist(lapply(temp, function(x) is.monophyletic(bird.families, x$species))))
-all(unlist(lapply(temp, function(x) is.monophyletic(bird.families, x$species))))
-?all
+splitUp <- split(cladesDF, cladesDF$clade)
+mono <- unlist(lapply(splitUp, function(x) is.monophyletic(tree, x$species)))
 mono
+write.tree(tree,"test.tre")
+document()
+?divRates
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#and create a dummy data frame to pay attention to diversification rates#
+#of two arbitrary clades#
+graptemysEtc <- data.frame(#
+  species=tree$tip.label[grep(c("Graptemys","Trachemys","Malaclemys"), tree$tip.label)],#
+  clade="graptemys")#
+gopherus <- data.frame(species=tree$tip.label[grep("Gopherus", tree$tip.label)],#
+  clade="gopherus")#
+cladesDF <- rbind(graptemys, gopherus)#
+#
+#drop species, add them back in and see how diversification rates of those clades#
+#change#
+example <- tipDropper(tree, groupsDF, 10)#
+#
+sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE,#
+  calc.from.crown=TRUE, epsilon=0.1)
+cladesDF
+tree$tip.label[grep(c("Graptemys","Trachemys","Malaclemys"), tree$tip.label)]
+c("Graptemys","Trachemys","Malaclemys")
+document()
+?divRates
+data(chelonia)#
+tree <- chelonia$phy#
+#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
+#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
+#
+#and create a dummy data frame to pay attention to diversification rates#
+#of two arbitrary clades#
+graptemysEtc <- data.frame(#
+  species=groupsDF$species[groupsDF$group %in% c("Graptemys","Trachemys","Malaclemys")],#
+  clade="graptemys")#
+gopherus <- data.frame(species=tree$tip.label[grep("Gopherus", tree$tip.label)],#
+  clade="gopherus")#
+cladesDF <- rbind(graptemys, gopherus)#
+#
+#drop species, add them back in and see how diversification rates of those clades#
+#change#
+example <- tipDropper(tree, groupsDF, 10)#
+#
+sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE,#
+  calc.from.crown=TRUE, epsilon=0.1)
+cladesDF
+groupsDF$species[groupsDF$group %in% c("Graptemys","Trachemys","Malaclemys")]
 document()
 rm(list=ls())
-?randomlyAddTaxa
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
+?divRates
+data(chelonia)#
+tree <- chelonia$phy#
 #
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
+#some species in this tree are identified to subspecies. drop those#
+temp <- lapply(strsplit(tree$tip.label, "_"), length)#
+names(temp) <- tree$tip.label#
+temp <- temp[temp==2]#
+tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))#
 #
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
+#create an example groupings data frame.#
+groupsDF <- data.frame(species=tree$tip.label)#
+groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))#
 #
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
+#and create a dummy data frame to pay attention to diversification rates#
+#of two arbitrary clades#
+graptemysEtc <- data.frame(#
+  species=groupsDF$species[groupsDF$group %in% c("Graptemys","Trachemys","Malaclemys")],#
+  clade="graptemys")#
+gopherus <- data.frame(species=tree$tip.label[grep("Gopherus", tree$tip.label)],#
+  clade="gopherus")#
+cladesDF <- rbind(graptemysEtc, gopherus)#
 #
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
+#drop species, add them back in and see how diversification rates of those clades#
+#change#
+example <- tipDropper(tree, groupsDF, 10)#
 #
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=FALSE)
-is.monophyletic(bird.families, "Sthruthionidae")
-temp
+sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",#
+  no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE,#
+  calc.from.crown=TRUE, epsilon=0.1)
 cladesDF
-unlist(getMRCAs(bird.families, cladesDF))
-temp <- unlist(getMRCAs(bird.families, cladesDF))
-lapply(temp, geiger:::.get.descendents, tree)
-lapply(temp, function(x) geiger:::.get.descendants.of.node(node=x, phy=bird.families)
-)
-lapply(temp, function(x) geiger:::.get.descendants.of.node(node=x, phy=bird.families))->temp2
-temp2
-temp2[temp2 == 256]
-unlist(temp2)[unlist(temp2)==256]
-as.data.frame(temp2)
-data.frame(temp2)
-unlist(temp2)
-lapply(temp2, function(x) x[x==244])
-temp3 <- lapply(temp2, function(x) x[x==244])
-temp3
-unlist(temp3)
-temp
-cladesDF
-getMRCAs(tree, cladesDF)
-getMRCAs(bird.families, cladesDF)
-test3 <- cladesDF
-test3 <- rbind(cladesDF, data.frame(species="Tinamidae","ratite"))
-test3 <- rbind(cladesDF, data.frame(species="Tinamidae",clade="ratite"))
-test3
-getMRCAs(bird.families, test3)
-getMRCAs
-bird.families$tip.label[5]
-temp3
-temp3 <- lapply(temp2, function(x) x[x==24])
-temp3
-unlist(temp3)
-length(unlist(temp3))
-temp2
-temp3
-unlist(temp3)
-temp3 <- lapply(temp2, function(x) x[x==244])
-unlist(temp3)
-names(temp3)
-names(temp3)[1]
-length(temp3)
-temp3
-temp4 <- unlist(temp3)
-names(temp4)
-rm(list=ls())
-document()
-?randomlyAddTaxa
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-ex2
-ex1
-plot(ex1$trees[[1]])
-plot(ex1$trees[[1]], cex=0.3)
-plot(ladderize(ex1$trees[[1]]), cex=0.3)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-class(cladesDF)
-cladesDF
-test2 <- data.frame(species=toAdd[j,1], clade=NA)
-test2 <- data.frame(species="Yuhinia", clade=NA)
-test2
-rbind(cladesDF,test2)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-debug(randomlyAddTaxa)
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-undebug(randomlyAddTaxa)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-toAdd
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-tail(cladesDF)
-toAdd
-randomlyAddTaxa
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-ex1
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-document()
-data(bird.families)#
-bird.families <- multi2di(bird.families)#
-#
-#create a data frame of all taxa from the phylogeny, and make up species groups#
-#for each.#
-dummyGroups <- data.frame(species=bird.families$tip.label, group=c(rep("ratite", 5),#
-  rep("nonPasserine", 90), rep("suboscine", 9), rep("basalOscine", 13), rep("oscine", 20)))#
-#
-#now make up a few passerine taxa that are missing and add these into the dummy frame#
-toAdd <- data.frame(species=c("Icteria", "Yuhina", "Pityriasis", "Macgregoria","Tinamus"), #
-group=c(rep("oscine", 2), rep("basalOscine", 2), "ratite"))#
-groupsDF <- rbind(dummyGroups, toAdd)#
-#
-#pay attention to additions to the basalOscine and oscine clades.#
-basalOscines <- dummyGroups[dummyGroups$group=="basalOscine",]#
-oscines <- dummyGroups[dummyGroups$group=="oscine",]#
-cladesDF <- rbind(basalOscines, oscines)#
-names(cladesDF)[2] <- "clade"#
-#
-#examples of changing the branch.position argument. you can plot or write#
-#these trees better see what the differences are#
-ex1 <- randomlyAddTaxa(tree=bird.families, groupings=groupsDF,#
-	branch.position="midpoint", no.trees=10, clade.membership=cladesDF, #
-crown.can.move=TRUE)
-ex1
+example
+example$tip.label
