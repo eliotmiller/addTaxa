@@ -22,8 +22,8 @@
 #' I have removed checks to account and deal with this--if you need them back let me know. 
 #' The fourth option is
 #' "bd." This uses the corsim function from the TreeSim package to simulate the missing
-#' speciation events according to speciation (lambda) and extinction (mu) values passed
-#' to addTaxa. 
+#' speciation events according to speciation (lambda) and extinction (mu) values calculated
+#' internally by addTaxa using diversitree.
 #' @param ini.lambda Initial speciation value for the "bd" optimization, if that option
 #' of branch position is chosen. Defaults to 1.
 #' @param ini.mu Initial extinction value for the "bd" optimization, if that option
@@ -49,31 +49,32 @@
 #' crown age). If crown.can.move is set to FALSE, then after one taxon is added to such a
 #' single-species clade, the crown age of that clade then becomes fixed and will not move.
 #' 
-#' @details REVISE! Given a data frame of two columns, "species" and "group", will take a species
+#' @details Given a data frame of two columns, which *must* be namd "species" and "group",
+#' will take a species
 #' that is absent from the phylogeny and bind it to a randomly selected taxonomic 
-#' relative. Note that the current implementation of the function iteratively builds up
-#' the tree, meaning that a species being bound into the tree can be bound to a
-#' species that was in the input phylogeny, or to a species that was added during a
-#' previous iteration of the function. Previously, added species could only be bound to
-#' species that were in the input phylogeny. This new feature slows the function down,
-#' but it results in more realistic-looking, less ladderized trees. Additionally, previous
-#' iterations of this function also worked from top to bottom of the list of missing taxa.
-#' This potentially results in a biased exploration of possible tree space. The function
-#' now samples missing taxa and updates the missing list accordingly to allow a less
-#' biased exploration of possible complete trees. Four distinct methods
-#' of adding new taxa are possible. With "polytomy", the new species is simply assigned to
-#' a tip. Both species end up with branch lengths to their most recent common ancestor of
-#' 0. With "crown", the new species is bound in at half the distance between the species
-#' it is being bound to and that species' original parent node. With "stem", the new
-#' species is bound to the parent node of the species it was selected to be bound to. The
-#' new species is bound in at half the distance between the parent node and grandparent
-#' node. With "randomly", each new species is randomly bound either crown-wards or
-#' stem-wards, following the descriptions above. Note that even if "stem" or "randomly" 
-#' are chosen, if a species is to be bound to the sister species to all others (the most
-#' "basal" species in the phylogeny), it will automatically be bound stem-wards. With all
-#' options, if the input tree is ultrametric, the output trees should remain so. 
-#' Currently, no effort is made to ensure that the taxonomic groups of the missing species
-#' are actually to be found in the species in the input tree.
+#' relative. The algorithm works as follows. First, species are identified that are in
+#' the groupings data frame but are not present in the tree. The order of these missing
+#' species is then randomized. One of these missing species (A) is selected, and a
+#' species (B) from the tree that is in that species' group is identified. If B is the
+#' only species in the tree in that group, A is bound to B at a distance below the tip
+#' determined by the branch.position argument. If the group of A+B contains additional
+#' species in the tree, the function then checks whether those species are monophyletic.
+#' If so, the function identifies all possible valid positions within the group to which
+#' A could be added. The root of the phylogeny and, if crown.can.move is set to FALSE,
+#' the crown node of the group, are excluded from consideration. If the species group is
+#' not monophyletic, the function bumps one node down (stemwards) in the tree towards the
+#' root and checks whether the species that descend from it all belong to the same group
+#' as B. The function continues this process until it finds a node that leads to species
+#' in multiple species groups, or hits the root. Then, all possible positions upstream
+#' (crownwards) from the deepest node encountered are tabulated, one is randomly selected,
+#' and A is bound accordingly. This process is repeated iteratively until the tree contains
+#' all species in the groupings data frame. There are a four options for how far below A
+#' will be added to whichever node is ultimately selected for binding. These are:
+#' polytomy, midpoint, uniform, and birth-death model, described in the branch.position
+#' argument above. Additionally, the function can take a clade membership data frame,
+#' which must contain the columns "species" and "clade". When missing species are added
+#' into these clades, the data frame is updated accordingly, which facilitates
+#' calculations of the sensitivity of diversification rate later.
 #'
 #' @return A list with two elements: (1) multiPhylo object with number of trees as 
 #' determined by no.trees, and, if clade.membership was provided, (2) a list of data 

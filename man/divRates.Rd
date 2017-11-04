@@ -95,7 +95,7 @@ tree <- drop.tip(tree, setdiff(tree$tip.label, names(temp)))
 groupsDF <- data.frame(species=tree$tip.label)
 groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))
 
-#drop 10 species from the tree
+#drop 20 species from the tree
 example <- tipDropper(tree, groupsDF, 20)
 
 #create a dummy data frame to pay attention to diversification rates
