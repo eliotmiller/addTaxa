@@ -1,7 +1,7 @@
 # addTaxa
 ## An R package for adding missing taxa to phylogenies
 
-The original implementations of these functions were detailed in [our American Journal of Botany paper](http://www.amjbot.org/content/102/10/1634) on the timing and tempo of the Australian Hakeinae. The current version of the package contains an updated algorithm for adding missing taxa, and it contains new options for scaling branch lengths when taxa are added in. The new version runs more smoothly than the original version, but it has not been extensively user-tested. Create a GitHub issue and let me know if you find anything weird.
+The original implementations of these functions were detailed in [our American Journal of Botany paper](http://www.amjbot.org/content/102/10/1634) on the timing and tempo of the Australian Hakeinae. The version of addTaxa released in conjunction with that paper is available [here](https://github.com/eliotmiller/addTaxa/releases/tag/v0.1). The current version of the package contains an updated algorithm for adding missing taxa, and it contains new options for scaling branch lengths when taxa are added in. The new version runs more smoothly than the original version, but it has not been extensively user-tested. Create a GitHub issue and let me know if you find anything weird.
 
 #### Why should I use addTaxa?
 addTaxa allows users to add missing taxa, e.g., species, to phylogenies based on user-provided taxonomic information. It also can track additions to focal clades within the original phylogeny, permitting one to estimate the sensitivity of absolute diversification rate calculations for these clades as a function of phylogenetic uncertainty.
@@ -78,4 +78,3 @@ sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",
 #in, it's likely there was no variation in diversification rate in this example.
  ```
 
-#### The version of addTaxa released in conjunction with our American Journal of Botany paper is available [here](https://github.com/eliotmiller/addTaxa/releases/tag/v0.1).
