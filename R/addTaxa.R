@@ -82,6 +82,10 @@
 #'
 #' @export
 #'
+#' @importFrom stats runif
+#' @importFrom phytools bind.tip
+#' @importFrom ape is.binary.tree is.monophyletic getMRCA branching.times
+#'
 #' @references Mast et al. 2015. Paraphyly changes understanding of timing and tempo of 
 #' diversification in subtribe Hakeinae (Proteaceae), a giant Australian plant radiation.
 #' American Journal of Botany.
@@ -149,6 +153,13 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 		if(length(clade.membership$species) != length(unique(clade.membership$species)))
 		{
 			stop("The clades are not mutually exclusive")
+		}
+
+		#insert another check to make sure all spp in clade.membership are in the
+		#tree. you get really confusing error messages if they are not
+		if(length(setdiff(clade.membership$species, tree$tip.label)) > 0)
+		{
+			stop("clade.membership contains species that are not in tree")
 		}
 	}
 
@@ -405,7 +416,7 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 				#define bindDist as a uniform value between 0 and max. could create polytomies
 				#with code like this, in theory. used to add an offset here to account for that,
 				#but seems like over thinking it. add later if necessary
-				bindDist <- runif(n=1, min=0, max=tree$edge.length[nodeIndex])
+				bindDist <- stats::runif(n=1, min=0, max=tree$edge.length[nodeIndex])
 			}
 
 			else if(branch.position=="bd")
@@ -498,7 +509,7 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 			}
 
 			#finally, bind the new tip in
-			tree <- bind.tip(tree=tree, tip.label=toAdd[j,1], where=bindTo,
+			tree <- phytools::bind.tip(tree=tree, tip.label=toAdd[j,1], where=bindTo,
 				position=bindDist)
 		}
 

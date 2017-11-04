@@ -18,6 +18,8 @@
 #'
 #' @export
 #'
+#' @importFrom TreeSim getx corsim
+#'
 #' @references ETM unpublished
 #'
 #' @examples
@@ -29,10 +31,11 @@
 bdScaler <- function(tree, lambda, mu, min.age, max.age)
 {
 	#generate the vector of branching times in the input tree with the getx function
-	originalTimes <- getx(tree)
+	originalTimes <- TreeSim::getx(tree)
 
 	#simulate the missing branching time
-	temp <- corsim(x=originalTimes, lambda, mu, missing=1, tyoung=min.age, told=max.age)
+	temp <- TreeSim::corsim(x=originalTimes, lambda, mu, missing=1,
+		tyoung=min.age, told=max.age)
 	
 	#figure out which of the new branching times was not one of the original times
 	result <- temp[!(temp %in% originalTimes)]

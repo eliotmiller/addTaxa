@@ -17,6 +17,9 @@
 #'
 #' @export
 #'
+#' @importFrom plyr count
+#' @importFrom ape drop.tip
+#'
 #' @examples
 #' #load an example tree up
 #' data(chelonia)
@@ -56,7 +59,7 @@ tipDropper <- function(tree, groupings, no.to.drop)
 		sp <- sample(spp, 1)
 
 		#drop the tip from the tree
-		tree <- drop.tip(tree, as.character(sp))
+		tree <- ape::drop.tip(tree, as.character(sp))
 
 		#drop the tip from groupings to make sure you don't hit it again
 		groupings <- groupings[groupings$species != sp,]

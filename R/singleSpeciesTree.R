@@ -13,6 +13,8 @@
 #'
 #' @export
 #'
+#' @importFrom ape read.tree
+#'
 #' @references Mast et al. 2015. Paraphyly changes understanding of timing and tempo of 
 #' diversification in subtribe Hakeinae (Proteaceae), a giant Australian plant radiation.
 #' American Journal of Botany.

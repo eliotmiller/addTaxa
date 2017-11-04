@@ -16,6 +16,8 @@
 #'
 #' @export
 #'
+#' @importFrom diversitree make.bd find.mle
+#'
 #' @references ETM unpublished
 #'
 #' @examples

@@ -64,6 +64,8 @@
 #'
 #' @export
 #'
+#' @importFrom geiger bd.ms
+#'
 #' @references Mast et al. 2015. Paraphyly changes understanding of timing and tempo of 
 #' diversification in subtribe Hakeinae (Proteaceae), a giant Australian plant radiation.
 #' American Journal of Botany.
@@ -82,21 +84,25 @@
 #' groupsDF <- data.frame(species=tree$tip.label)
 #' groupsDF$group <- unlist(lapply(strsplit(tree$tip.label, "_"), "[", 1))
 #'
-#' #and create a dummy data frame to pay attention to diversification rates
+#' #drop 10 species from the tree
+#' example <- tipDropper(tree, groupsDF, 20)
+#'
+#' #create a dummy data frame to pay attention to diversification rates
 #' #of two arbitrary clades
 #' graptemysEtc <- data.frame(
-#'   species=groupsDF$species[groupsDF$group %in% c("Graptemys","Trachemys","Malaclemys")],
+#'   species=c(example$tip.label[grep("Graptemys", example$tip.label)],
+#'   example$tip.label[grep("Trachemys", example$tip.label)],
+#'   example$tip.label[grep("Malaclemys", example$tip.label)]),
 #'   clade="graptemys")
-#' gopherus <- data.frame(species=tree$tip.label[grep("Gopherus", tree$tip.label)],
+#' gopherus <- data.frame(
+#'   species=example$tip.label[grep("Gopherus", example$tip.label)],
 #'   clade="gopherus")
 #' cladesDF <- rbind(graptemysEtc, gopherus)
 #'
-#' #drop species, add them back in and see how diversification rates of those clades
-#' #change
-#' example <- tipDropper(tree, groupsDF, 10)
-#'
+#' #use the divRates function to examine the sensitivity of diversification rates
+#' #to the addTaxa function
 #' sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",
-#'   no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE,
+#'   no.trees=3, clade.membership=cladesDF, crown.can.move=TRUE,
 #'   calc.from.crown=TRUE, epsilon=0.1)
 
 divRates <- function(tree, groupings, branch.position, ini.lambda=1,

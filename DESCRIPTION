@@ -1,18 +1,22 @@
 Package: addTaxa
 Type: Package
-Title: A R package for adding missing taxa to phylogenies
+Title: An R package for adding missing taxa to phylogenies
 Version: 0.2
 Date: 2017-11-02
 Author: Eliot Miller
 Maintainer: Eliot Miller <eliot.isaac@gmail.com>
-Description: add missing taxa based on taxonomic information
+Description: add missing taxa to a phylogeny based on taxonomic information.
 License: GPL-3
 Depends:
     R (>= 3.1.1),
-    geiger,
+    ape,
+    geiger
+Imports:
+    stats,
+    plyr,
     phytools,
     diversitree,
-    TreeSim
+    TreeSim,
 Suggests:
     testthat
 LazyData: true
