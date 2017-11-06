@@ -32,11 +32,11 @@
 findRates <- function(tree, prop.complete, ini.lambda=1, ini.mu=0.1)
 {
 	#if the tree is not binary then this function will fail. if that's the case,
-	#convert polytomies to bifurcating branches of length 0 and throw a warning
+	#convert polytomies to bifurcating branches of length 0. note that this does
+	#not 
 	if(!ape::is.binary.tree(tree))
 	{
 		tree <- ape::multi2di(tree)
-		warning("forced polytomies to dichotomies of length zero")
 	}
 	iniLik <- diversitree::make.bd(tree, sampling.f=prop.complete)
 	results <- diversitree::find.mle(iniLik, method="subplex", c(ini.lambda,ini.mu))
