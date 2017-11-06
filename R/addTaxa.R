@@ -49,8 +49,8 @@
 #' crown age). If crown.can.move is set to FALSE, then after one taxon is added to such a
 #' single-species clade, the crown age of that clade then becomes fixed and will not move.
 #' 
-#' @details Given a data frame of two columns, which *must* be namd "species" and "group",
-#' will take a species
+#' @details Given a data frame of two columns, which *must* be named "species" and
+#' "group", will take a species
 #' that is absent from the phylogeny and bind it to a randomly selected taxonomic 
 #' relative. The algorithm works as follows. First, species are identified that are in
 #' the groupings data frame but are not present in the tree. The order of these missing
@@ -446,18 +446,55 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 					prop.complete=length(tree$tip.label)/dim(groupings)[1],
 					ini.lambda=ini.lambda, ini.mu=ini.mu)
 
-				#calculate the age of the missing speciation event
-				missingAge <- bdScaler(tree, lambda=rates["lambda"], mu=rates["mu"],
-					min.age=bindToAge, max.age=parentAge)
+				#calculate the age of the missing speciation event. this can very occasionally
+				#throw errors for reasons that I don't understand. wrap it up in a tryCatch
+				#and use the midpoint method if it throws an error. i think actually it might
+				#return as 'numeric(0)', so try adding that logical below.
+				missingAge <- try(bdScaler(tree, lambda=rates["lambda"], mu=rates["mu"],
+					min.age=bindToAge, max.age=parentAge), silent=TRUE)
 
-				#this part is a little tricky. find the distance below bindTo to bind tip in.
-				#add a check here that if bindDist is below the parent node
-				#it sets the age to the parent node. this will create a polytomy
-				bindDist <- missingAge-bindToAge
-
-				if(bindDist > parentAge-bindToAge)
+				if(class(missingAge)=="try-error" | length(missingAge) == 0)
 				{
-					bindDist <- parentAge-bindToAge
+					#identify the node that subtends the selected node to bind to
+					parent <- tree$edge[,1][tree$edge[,2]==bindTo]
+
+					#find the distance between these two nodes. first
+					#set up a temporary matrix and give it row names. this allows you to pull out
+					#the index of the edge in question, and subset the edge.lengths based on that
+					#index, to get needed branch lengths later
+					tempMatrix <- tree$edge
+					rownames(tempMatrix) <- 1:dim(tempMatrix)[1]
+
+					#use the matrix to get the index needed below
+					nodeIndex <- rownames(tempMatrix)[tempMatrix[,1]==parent 
+						& tempMatrix[,2]==bindTo]
+					nodeIndex <- as.numeric(nodeIndex)
+
+					#define the distance to bind as half distance to the parent node
+					bindDist <- tree$edge.length[nodeIndex]/2
+
+					warning("used 'midpoint' branch.position argument for addition of a taxon")
+				}
+
+				#if missingAge is not a try-error, it should be class numeric. find
+				#the distance below bindTo to bind tip in.
+				else
+				{
+					bindDist <- missingAge-bindToAge
+
+					#add a check here that if bindDist is below the parent node
+					#it sets the age to the parent node. you would think this shouldn't be
+					#possible, but TreeSim seems willing to return some weird things, so also
+					#include another check that if bindDist is a negative number, it goes to 0.
+					if(bindDist > parentAge-bindToAge)
+					{
+						bindDist <- parentAge-bindToAge
+					}
+
+					if(bindDist < 0)
+					{
+						bindDist <- 0
+					}
 				}
 			}
 
@@ -512,6 +549,12 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 			#finally, bind the new tip in
 			tree <- phytools::bind.tip(tree=tree, tip.label=toAdd[j,1], where=bindTo,
 				position=bindDist)
+		}
+
+		#if branch.position was bd, and the tree has polytomies, throw a warning
+		if(branch.position=="bd" & !ape::is.binary.tree(tree))
+		{
+			warning("used multi2di to calculate diversification rates; polytomies present in tree")
 		}
 
 		#save the complete tree as an element in the list object. do same for

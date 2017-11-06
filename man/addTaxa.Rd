@@ -71,8 +71,8 @@ some of those species in it, will add the missing species in next to a taxonomic
 relative. Optionally, can keep track of which named clades species are bound to.
 }
 \details{
-Given a data frame of two columns, which *must* be namd "species" and "group",
-will take a species
+Given a data frame of two columns, which *must* be named "species" and
+"group", will take a species
 that is absent from the phylogeny and bind it to a randomly selected taxonomic 
 relative. The algorithm works as follows. First, species are identified that are in
 the groupings data frame but are not present in the tree. The order of these missing

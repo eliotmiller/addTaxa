@@ -17,6 +17,7 @@
 #' @export
 #'
 #' @importFrom diversitree make.bd find.mle
+#' @importFrom ape is.binary.tree multi2di
 #'
 #' @references ETM unpublished
 #'
@@ -30,7 +31,14 @@
 
 findRates <- function(tree, prop.complete, ini.lambda=1, ini.mu=0.1)
 {
-	iniLik <- make.bd(tree, sampling.f=prop.complete)
-	results <- find.mle(iniLik, method="subplex", c(ini.lambda,ini.mu))
+	#if the tree is not binary then this function will fail. if that's the case,
+	#convert polytomies to bifurcating branches of length 0 and throw a warning
+	if(!ape::is.binary.tree(tree))
+	{
+		tree <- ape::multi2di(tree)
+		warning("forced polytomies to dichotomies of length zero")
+	}
+	iniLik <- diversitree::make.bd(tree, sampling.f=prop.complete)
+	results <- diversitree::find.mle(iniLik, method="subplex", c(ini.lambda,ini.mu))
 	results$par
 }

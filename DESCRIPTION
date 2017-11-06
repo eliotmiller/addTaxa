@@ -16,7 +16,7 @@ Imports:
     plyr,
     phytools,
     diversitree,
-    TreeSim,
+    TreeSim
 Suggests:
     testthat
 LazyData: true
