@@ -182,6 +182,16 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 		stop("All missing species must be part of a taxonomic group in the input tree")
 	}
 
+	#use the findRates function to estimate speciation and extinction rates for the
+	#original tree. do not update these rates as the tree is built up (you used to
+	#do this).
+	if(branch.position=="bd")
+	{
+		rates <- findRates(origTree,
+			prop.complete=length(origTree$tip.label)/dim(groupings)[1],
+			ini.lambda=ini.lambda, ini.mu=ini.mu)
+	}
+
 	#begin outer loop where you aggregate complete trees
 	for(i in 1:no.trees)
 	{
@@ -441,16 +451,12 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 
 				parentAge <- ages[names(ages)==parent]
 
-				#use the findRates function to estimate speciation and extinction rates
-				rates <- findRates(tree,
-					prop.complete=length(tree$tip.label)/dim(groupings)[1],
-					ini.lambda=ini.lambda, ini.mu=ini.mu)
-
 				#calculate the age of the missing speciation event. this can very occasionally
 				#throw errors for reasons that I don't understand. wrap it up in a tryCatch
 				#and use the midpoint method if it throws an error. i think actually it might
-				#return as 'numeric(0)', so try adding that logical below.
-				missingAge <- try(bdScaler(tree, lambda=rates["lambda"], mu=rates["mu"],
+				#return as 'numeric(0)', so try adding that logical below.				
+				missingAge <- try(bdScaler(tree=tree,
+					lambda=rates["lambda"], mu=rates["mu"],
 					min.age=bindToAge, max.age=parentAge), silent=TRUE)
 
 				if(class(missingAge)=="try-error" | length(missingAge) == 0)
