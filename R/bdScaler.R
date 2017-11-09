@@ -30,8 +30,6 @@
 
 bdScaler <- function(tree, lambda, mu, min.age, max.age)
 {
-	saveRDS(tree, "sliced.RDS")
-
 	#generate the vector of branching times in the input tree with the getx function
 	originalTimes <- TreeSim::getx(tree)
 
