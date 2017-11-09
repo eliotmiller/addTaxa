@@ -86,6 +86,7 @@
 #' @importFrom stats runif
 #' @importFrom phytools bind.tip
 #' @importFrom ape is.binary.tree is.monophyletic getMRCA branching.times
+#' @importFrom paleotree timeSliceTree
 #'
 #' @references Mast et al. 2015. Paraphyly changes understanding of timing and tempo of 
 #' diversification in subtribe Hakeinae (Proteaceae), a giant Australian plant radiation.
@@ -455,9 +456,27 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 				#throw errors for reasons that I don't understand. wrap it up in a tryCatch
 				#and use the midpoint method if it throws an error. i think actually it might
 				#return as 'numeric(0)', so try adding that logical below.				
-				missingAge <- try(bdScaler(tree=tree,
+				#missingAge <- try(bdScaler(tree=tree,
+				#	lambda=rates["lambda"], mu=rates["mu"],
+				#	min.age=bindToAge, max.age=parentAge), silent=TRUE)
+
+				#prune the tree at the parent node
+				pruned <- extract.clade(tree, parent)
+
+				#slice the tree at the bindToAge. if this is 0 (i.e. bindTo was a tip), the
+				#tree is returned unmodified. if it's not a tip, then a polytomy is left at
+				#the slice point. you can add a small constant to the slice point if this
+				#is an issue. wrap in warning suppression as function returns an irrelevant
+				#warning for our purposes
+				pruned$root.time = max(TreeSim::getx(pruned))
+				sliced <- paleotree::timeSliceTree(ttree=pruned,
+					sliceTime=bindToAge, plot=FALSE)
+				pruned$root.time <- NULL
+
+				#find the missing event for this pruned tree
+				missingAge <- try(bdScaler(tree=sliced,
 					lambda=rates["lambda"], mu=rates["mu"],
-					min.age=bindToAge, max.age=parentAge), silent=TRUE)
+					min.age=0, max.age=0), silent=TRUE)
 
 				if(class(missingAge)=="try-error" | length(missingAge) == 0)
 				{
@@ -486,7 +505,11 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 				#the distance below bindTo to bind tip in.
 				else
 				{
-					bindDist <- missingAge-bindToAge
+					#you used to define bindDist as the missingAge minus the bindToAge (which
+					#was only relevant for internal nodes). however, now that you are pruning
+					#and slicing trees, do not subtract bindToAge here or you'll get negative
+					#branches!
+					bindDist <- missingAge
 
 					#add a check here that if bindDist is below the parent node
 					#it sets the age to the parent node. you would think this shouldn't be

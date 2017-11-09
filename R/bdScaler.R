@@ -30,15 +30,27 @@
 
 bdScaler <- function(tree, lambda, mu, min.age, max.age)
 {
+	saveRDS(tree, "sliced.RDS")
+
 	#generate the vector of branching times in the input tree with the getx function
 	originalTimes <- TreeSim::getx(tree)
 
-	#simulate the missing branching time
-	temp <- TreeSim::corsim(x=originalTimes, lambda, mu, missing=1,
-		tyoung=min.age, told=max.age)
-	
-	#figure out which of the new branching times was not one of the original times
-	result <- temp[!(temp %in% originalTimes)]
+	#simulate the missing branching time. having big problems with this sometimes
+	#being deeper than it should be, so wrap this in a while statement. 
+	acceptable <- 0
+	while(acceptable == 0)
+	{
+		temp <- TreeSim::corsim(x=originalTimes, lambda, mu, missing=1,
+			tyoung=min.age, told=max.age)
+
+		#figure out which of the new branching times was not one of the original times
+		result <- temp[!(temp %in% originalTimes)]
+
+		if(result <= max(originalTimes) & result >= 0)
+		{
+			acceptable <- 1
+		}
+	}
 
 	#not sure why this has a name, but weird formatting, so remove to make it nicer
 	names(result) <- NULL
