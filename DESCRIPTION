@@ -1,8 +1,8 @@
 Package: addTaxa
 Type: Package
 Title: An R package for adding missing taxa to phylogenies
-Version: 0.3
-Date: 2017-11-09
+Version: 0.4
+Date: 2017-11-10
 Author: Eliot Miller
 Maintainer: Eliot Miller <eliot.isaac@gmail.com>
 Description: add missing taxa to a phylogeny based on taxonomic information.
@@ -17,7 +17,8 @@ Imports:
     phytools,
     diversitree,
     TreeSim,
-    paleotree
+    paleotree,
+    R.utils
 Suggests:
     testthat
 LazyData: true

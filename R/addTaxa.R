@@ -28,6 +28,22 @@
 #' of branch position is chosen. Defaults to 1.
 #' @param ini.mu Initial extinction value for the "bd" optimization, if that option
 #' of branch position is chosen. Defaults to 0.1.
+#' @param bd.type Whether to use a 'local' or a 'global' birth-death estimation. The former
+#' is slower but tends to perform better, particularly if there are shifts in diversification
+#' rates in the tree. The latter runs faster.
+#' @param local.cutoff If using the local form of the bd method, this argument specifies
+#' at what point the local neighborhood is deemed sufficiently large to estimate a local
+#' diversification rate. For example, if this argument is set to 10, a local estimate is
+#' not derived until the species being added is being bound into a monophyletic clade of
+#' at least 10 tips belonging to that species' group. The method seems to perform better
+#' when this cutoff is set low, but smaller numbers increase run time. The cutoff must be
+#' 3 or higher, as the birth-death estimation will always fail for two taxa. It can also
+#' fail or timeout (see below) for larger cutoffs--when it does, it uses the midpoint
+#' branch.position method and moves onto the next taxon.
+#' @param timeout The amount of time to sample in search of a new branch position that
+#' accords with the local birth death estimation and that falls within the age of the
+#' branch to which the new species is being bound. Larger values may increase accuracy,
+#' but definitely increase run time. Default is 2 seconds. 
 #' @param no.trees The number of desired final trees with all missing species from 
 #' groupings added.
 #' @param clade.membership An optional data frame with first column = "species", second
@@ -87,6 +103,7 @@
 #' @importFrom phytools bind.tip
 #' @importFrom ape is.binary.tree is.monophyletic getMRCA branching.times
 #' @importFrom paleotree timeSliceTree
+#' @importFrom R.utils evalWithTimeout
 #'
 #' @references Mast et al. 2015. Paraphyly changes understanding of timing and tempo of 
 #' diversification in subtribe Hakeinae (Proteaceae), a giant Australian plant radiation.
@@ -111,10 +128,11 @@
 #'
 #' #add those missing species back in
 #' newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",
-#'   no.trees=1)
+#'   bd.type="global", no.trees=1)
 
 addTaxa <- function(tree, groupings, branch.position="midpoint", 
-	ini.lambda=1, ini.mu=0, no.trees, clade.membership, crown.can.move=TRUE)
+	ini.lambda=1, ini.mu=0, bd.type, local.cutoff, timeout, no.trees,
+	clade.membership, crown.can.move=TRUE)
 {
 	#set up a blank list and set aside the orig tree and DF to reload below
 	trees <- list()
@@ -184,8 +202,7 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 	}
 
 	#use the findRates function to estimate speciation and extinction rates for the
-	#original tree. do not update these rates as the tree is built up (you used to
-	#do this).
+	#original tree.
 	if(branch.position=="bd")
 	{
 		rates <- findRates(origTree,
@@ -452,32 +469,80 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 
 				parentAge <- ages[names(ages)==parent]
 
-				#calculate the age of the missing speciation event. this can very occasionally
-				#throw errors for reasons that I don't understand. wrap it up in a tryCatch
-				#and use the midpoint method if it throws an error. i think actually it might
-				#return as 'numeric(0)', so try adding that logical below.				
-				#missingAge <- try(bdScaler(tree=tree,
-				#	lambda=rates["lambda"], mu=rates["mu"],
-				#	min.age=bindToAge, max.age=parentAge), silent=TRUE)
+				#if bd.type is set to local, do all this fancy stuff
+				if(bd.type=="local")
+				{
+					#prune the tree at the parent node
+					pruned <- extract.clade(tree, parent)
 
-				#prune the tree at the parent node
-				pruned <- extract.clade(tree, parent)
+					#slice the tree at the bindToAge. if this is 0 (i.e. bindTo was a tip), the
+					#tree is returned unmodified. if it's not a tip, then a polytomy is left at
+					#the slice point. you can add a small constant to the slice point if this
+					#is an issue. adding the root.time piece is to get it to not throw a warning
+					pruned$root.time = max(TreeSim::getx(pruned))
+					sliced <- paleotree::timeSliceTree(ttree=pruned,
+						sliceTime=bindToAge, plot=FALSE)
+					pruned$root.time <- NULL
 
-				#slice the tree at the bindToAge. if this is 0 (i.e. bindTo was a tip), the
-				#tree is returned unmodified. if it's not a tip, then a polytomy is left at
-				#the slice point. you can add a small constant to the slice point if this
-				#is an issue. wrap in warning suppression as function returns an irrelevant
-				#warning for our purposes
-				pruned$root.time = max(TreeSim::getx(pruned))
-				sliced <- paleotree::timeSliceTree(ttree=pruned,
-					sliceTime=bindToAge, plot=FALSE)
-				pruned$root.time <- NULL
+					#calculate the age of the missing speciation event. this can pose problems when
+					#it returns as 'numeric(0)', so check that below, and use the midpoint approach
+					#if it does. it's nice to also wrap the bdScaler in a evalWithTimeout function so
+					#that if the while loop within the function is taking too long, it'll bump to the
+					#midpoint method. if sliced contains local.cutoff or more spp, recalculate a local
+					#birth-death rate. otherwise use the global rate. this is arbitrary, but the
+					#smaller that number of species is, the more off the birth/death rates will be,
+					#and the more likely bdScaler gets stuck in a while loop. stop loop after 2s
+					if(length(sliced$tip.label) >= local.cutoff)
+					{
+						#wrap this up into a try statement, as sometimes, somehow, non-ultrametric
+						#trees are being created. notice that in this new rate, you calculate the
+						#rate saying that only one species is missing. in the original rates
+						#you calculate it saying whatever all proportion is missing.
+						newRates <- try(findRates(sliced,
+							prop.complete=(length(sliced$tip.label)-1)/length(sliced$tip.label),
+							ini.lambda=ini.lambda, ini.mu=ini.mu), silent=TRUE)
+						
+						#if it threw an error, use the global rate
+						if(class(newRates)=="try-error")
+						{
+							missingAge <- try(evalWithTimeout(bdScaler(tree=sliced,
+								lambda=rates["lambda"], mu=rates["mu"],
+								min.age=0, max.age=0), timeout=timeout, onTimeout="error", silent=TRUE),
+								silent=TRUE)
+						}
+						else
+						{
+							missingAge <- try(evalWithTimeout(bdScaler(tree=sliced,
+								lambda=newRates["lambda"], mu=newRates["mu"],
+								min.age=0, max.age=0), timeout=timeout, onTimeout="error", silent=TRUE),
+								silent=TRUE)
+						}
+					}
 
-				#find the missing event for this pruned tree
-				missingAge <- try(bdScaler(tree=sliced,
-					lambda=rates["lambda"], mu=rates["mu"],
-					min.age=0, max.age=0), silent=TRUE)
+					#if sliced is not greater than or equal to the local cutoff, use global rate
+					else
+					{
+						missingAge <- try(evalWithTimeout(bdScaler(tree=sliced,
+							lambda=rates["lambda"], mu=rates["mu"],
+							min.age=0, max.age=0), timeout=3, onTimeout="error", silent=TRUE),
+							silent=TRUE)
+					}
+				}
 
+				else if(bd.type=="global")
+				{
+					#calculate the age of the missing speciation event. force it to be within the
+					#requisite time frame
+					missingAge <- bdScaler(tree, lambda=rates["lambda"], mu=rates["mu"],
+						min.age=bindToAge, max.age=parentAge)
+				}
+
+				else
+				{
+					stop("if using 'bd' branch.position method, bd.type must be set to either 'local' or 'global'")
+				}
+
+				#if any of that failed, use the midpoint branch.position
 				if(class(missingAge)=="try-error" | length(missingAge) == 0)
 				{
 					#identify the node that subtends the selected node to bind to
@@ -498,18 +563,26 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 					#define the distance to bind as half distance to the parent node
 					bindDist <- tree$edge.length[nodeIndex]/2
 
-					warning("used 'midpoint' branch.position argument for addition of a taxon")
+					warning("used 'midpoint' branch.position argument for addition of a taxon; corsim was not able to generate an appropriate split before function timeout")
 				}
 
 				#if missingAge is not a try-error, it should be class numeric. find
 				#the distance below bindTo to bind tip in.
 				else
 				{
-					#you used to define bindDist as the missingAge minus the bindToAge (which
-					#was only relevant for internal nodes). however, now that you are pruning
-					#and slicing trees, do not subtract bindToAge here or you'll get negative
-					#branches!
-					bindDist <- missingAge
+					#if you use the local bd.type, because you prune and slice trees, do not
+					#subtract bindToAge here or you'll get negative branches
+					if(bd.type=="local")
+					{
+						bindDist <- missingAge
+					}
+
+					#if you use global bd.type, subtract bindToAge. only relevant for internal
+					#nodes
+					else
+					{
+						bindDist <- missingAge - bindToAge
+					}
 
 					#add a check here that if bindDist is below the parent node
 					#it sets the age to the parent node. you would think this shouldn't be

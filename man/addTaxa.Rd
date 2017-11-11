@@ -5,7 +5,8 @@
 \title{Bind species to hypothesized relatives in a phylogeny}
 \usage{
 addTaxa(tree, groupings, branch.position = "midpoint", ini.lambda = 1,
-  ini.mu = 0, no.trees, clade.membership, crown.can.move = TRUE)
+  ini.mu = 0, bd.type, local.cutoff, timeout, no.trees, clade.membership,
+  crown.can.move = TRUE)
 }
 \arguments{
 \item{tree}{An ape-style phylogenetic tree.}
@@ -35,6 +36,25 @@ of branch position is chosen. Defaults to 1.}
 
 \item{ini.mu}{Initial extinction value for the "bd" optimization, if that option
 of branch position is chosen. Defaults to 0.1.}
+
+\item{bd.type}{Whether to use a 'local' or a 'global' birth-death estimation. The former
+is slower but tends to perform better, particularly if there are shifts in diversification
+rates in the tree. The latter runs faster.}
+
+\item{local.cutoff}{If using the local form of the bd method, this argument specifies
+at what point the local neighborhood is deemed sufficiently large to estimate a local
+diversification rate. For example, if this argument is set to 10, a local estimate is
+not derived until the species being added is being bound into a monophyletic clade of
+at least 10 tips belonging to that species' group. The method seems to perform better
+when this cutoff is set low, but smaller numbers increase run time. The cutoff must be
+3 or higher, as the birth-death estimation will always fail for two taxa. It can also
+fail or timeout (see below) for larger cutoffs--when it does, it uses the midpoint
+branch.position method and moves onto the next taxon.}
+
+\item{timeout}{The amount of time to sample in search of a new branch position that
+accords with the local birth death estimation and that falls within the age of the
+branch to which the new species is being bound. Larger values may increase accuracy,
+but definitely increase run time. Default is 2 seconds.}
 
 \item{no.trees}{The number of desired final trees with all missing species from 
 groupings added.}
@@ -117,7 +137,7 @@ example <- tipDropper(tree, groupsDF, 100)
 
 #add those missing species back in
 newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",
-  no.trees=1)
+  bd.type="global", no.trees=1)
 }
 \references{
 Mast et al. 2015. Paraphyly changes understanding of timing and tempo of 

@@ -5,7 +5,8 @@
 \title{Calculate sensitivity of absolute diversification rates to missing taxa}
 \usage{
 divRates(tree, groupings, branch.position, ini.lambda = 1, ini.mu = 0.1,
-  no.trees, clade.membership, crown.can.move, calc.from.crown, epsilon)
+  bd.type, local.cutoff, timeout, no.trees, clade.membership, crown.can.move,
+  calc.from.crown, epsilon)
 }
 \arguments{
 \item{tree}{An ape-style phylogenetic tree}
@@ -35,6 +36,25 @@ of branch position is chosen. Defaults to 1.}
 
 \item{ini.mu}{Initial extinction value for the "bd" optimization, if that option
 of branch position is chosen. Defaults to 0.1.}
+
+\item{bd.type}{Whether to use a 'local' or a 'global' birth-death estimation. The former
+is slower but tends to perform better, particularly if there are shifts in diversification
+rates in the tree. The latter runs faster.}
+
+\item{local.cutoff}{If using the local form of the bd method, this argument specifies
+at what point the local neighborhood is deemed sufficiently large to estimate a local
+diversification rate. For example, if this argument is set to 10, a local estimate is
+not derived until the species being added is being bound into a monophyletic clade of
+at least 10 tips belonging to that species' group. The method seems to perform better
+when this cutoff is set low, but smaller numbers increase run time. The cutoff must be
+3 or higher, as the birth-death estimation will always fail for two taxa. It can also
+fail or timeout (see below) for larger cutoffs--when it does, it uses the midpoint
+branch.position method and moves onto the next taxon.}
+
+\item{timeout}{The amount of time to sample in search of a new branch position that
+accords with the local birth death estimation and that falls within the age of the
+branch to which the new species is being bound. Larger values may increase accuracy,
+but definitely increase run time. Default is 2 seconds.}
 
 \item{no.trees}{The number of desired final trees with all missing species from 
 groupings added.}
@@ -113,7 +133,7 @@ cladesDF <- rbind(graptemysEtc, gopherus)
 #use the divRates function to examine the sensitivity of diversification rates
 #to the addTaxa function
 sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",
-  no.trees=3, clade.membership=cladesDF, crown.can.move=TRUE,
+  bd.type="global", no.trees=3, clade.membership=cladesDF, crown.can.move=TRUE,
   calc.from.crown=TRUE, epsilon=0.1)
 }
 \references{
