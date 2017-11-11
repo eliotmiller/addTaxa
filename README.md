@@ -45,7 +45,7 @@ example <- tipDropper(tree, groupsDF, 100)
 #extinction rate, then using those estimates to generate believable branch lengths
 #with TreeSim.
 newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",
-  no.trees=1)
+  bd.type="global", no.trees=1)
 ```
 
 #### How do I keep track of diversification rate sensitivity?
@@ -71,7 +71,7 @@ cladesDF <- rbind(graptemysEtc, gopherus)
 #diversification rate calculation, and set the extinction rate for that calculation
 #to 0.1
 sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",
-  no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE,
+  bd.type="global", no.trees=10, clade.membership=cladesDF, crown.can.move=TRUE,
   calc.from.crown=TRUE, epsilon=0.1)
 
 #depending on which species were removed and where those species were added back
