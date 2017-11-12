@@ -447,7 +447,6 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 				#but seems like over thinking it. add later if necessary
 				bindDist <- stats::runif(n=1, min=0, max=tree$edge.length[nodeIndex])
 			}
-
 			else if(branch.position=="bd")
 			{
 				#identify the node that subtends the selected node to bind to
@@ -469,80 +468,57 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 
 				parentAge <- ages[names(ages)==parent]
 
-				#if bd.type is set to local, do all this fancy stuff
-				if(bd.type=="local")
+				#prune the tree at the parent node
+				pruned <- extract.clade(tree, parent)
+
+				#slice the tree at the bindToAge. if this is 0 (i.e. bindTo was a tip), the
+				#tree is returned unmodified. if it's not a tip, then a polytomy is left at
+				#the slice point. you can add a small constant to the slice point if this
+				#is an issue. adding the root.time piece is to get it to not throw a warning
+				pruned$root.time = max(TreeSim::getx(pruned))
+				sliced <- paleotree::timeSliceTree(ttree=pruned,
+					sliceTime=bindToAge, plot=FALSE)
+				pruned$root.time <- NULL
+
+				#calculate the age of the missing speciation event. this can pose problems when
+				#it returns as 'numeric(0)', so check that below, and use the midpoint approach
+				#if it does. it's nice to also wrap the bdScaler in a evalWithTimeout function so
+				#that if the while loop within the function is taking too long, it'll bump to the
+				#midpoint method. if sliced contains X or more species, recalculate a local
+				#birth-death rate. otherwise use the global rate. this is arbitrary, but the
+				#smaller that number of species is, the more off the birth/death rates will be,
+				#and the more likely bdScaler gets stuck in a while loop. stop loop after 2s
+				if(length(sliced$tip.label) >= 3)
 				{
-					#prune the tree at the parent node
-					pruned <- extract.clade(tree, parent)
-
-					#slice the tree at the bindToAge. if this is 0 (i.e. bindTo was a tip), the
-					#tree is returned unmodified. if it's not a tip, then a polytomy is left at
-					#the slice point. you can add a small constant to the slice point if this
-					#is an issue. adding the root.time piece is to get it to not throw a warning
-					pruned$root.time = max(TreeSim::getx(pruned))
-					sliced <- paleotree::timeSliceTree(ttree=pruned,
-						sliceTime=bindToAge, plot=FALSE)
-					pruned$root.time <- NULL
-
-					#calculate the age of the missing speciation event. this can pose problems when
-					#it returns as 'numeric(0)', so check that below, and use the midpoint approach
-					#if it does. it's nice to also wrap the bdScaler in a evalWithTimeout function so
-					#that if the while loop within the function is taking too long, it'll bump to the
-					#midpoint method. if sliced contains local.cutoff or more spp, recalculate a local
-					#birth-death rate. otherwise use the global rate. this is arbitrary, but the
-					#smaller that number of species is, the more off the birth/death rates will be,
-					#and the more likely bdScaler gets stuck in a while loop. stop loop after 2s
-					if(length(sliced$tip.label) >= local.cutoff)
-					{
-						#wrap this up into a try statement, as sometimes, somehow, non-ultrametric
-						#trees are being created. notice that in this new rate, you calculate the
-						#rate saying that only one species is missing. in the original rates
-						#you calculate it saying whatever all proportion is missing.
-						newRates <- try(findRates(sliced,
-							prop.complete=(length(sliced$tip.label)-1)/length(sliced$tip.label),
-							ini.lambda=ini.lambda, ini.mu=ini.mu), silent=TRUE)
-						
-						#if it threw an error, use the global rate
-						if(class(newRates)=="try-error")
-						{
-							missingAge <- try(evalWithTimeout(bdScaler(tree=sliced,
-								lambda=rates["lambda"], mu=rates["mu"],
-								min.age=0, max.age=0), timeout=timeout, onTimeout="error", silent=TRUE),
-								silent=TRUE)
-						}
-						else
-						{
-							missingAge <- try(evalWithTimeout(bdScaler(tree=sliced,
-								lambda=newRates["lambda"], mu=newRates["mu"],
-								min.age=0, max.age=0), timeout=timeout, onTimeout="error", silent=TRUE),
-								silent=TRUE)
-						}
-					}
-
-					#if sliced is not greater than or equal to the local cutoff, use global rate
-					else
+					#wrap this up into a try statement, as sometimes, somehow, non-ultrametric
+					#trees are being created
+					newRates <- try(findRates(sliced,
+						prop.complete=(length(sliced$tip.label)-1)/length(sliced$tip.label),
+						ini.lambda=ini.lambda, ini.mu=ini.mu), silent=TRUE)
+					if(class(newRates)=="try-error")
 					{
 						missingAge <- try(evalWithTimeout(bdScaler(tree=sliced,
 							lambda=rates["lambda"], mu=rates["mu"],
-							min.age=0, max.age=0), timeout=3, onTimeout="error", silent=TRUE),
+							min.age=0, max.age=0), timeout=2, onTimeout="error", silent=TRUE),
+							silent=TRUE)
+					}
+					else
+					{
+						missingAge <- try(evalWithTimeout(bdScaler(tree=sliced,
+							lambda=newRates["lambda"], mu=newRates["mu"],
+							min.age=0, max.age=0), timeout=2, onTimeout="error", silent=TRUE),
 							silent=TRUE)
 					}
 				}
 
-				else if(bd.type=="global")
-				{
-					#calculate the age of the missing speciation event. force it to be within the
-					#requisite time frame
-					missingAge <- bdScaler(tree, lambda=rates["lambda"], mu=rates["mu"],
-						min.age=bindToAge, max.age=parentAge)
-				}
-
 				else
 				{
-					stop("if using 'bd' branch.position method, bd.type must be set to either 'local' or 'global'")
+					missingAge <- try(evalWithTimeout(bdScaler(tree=sliced,
+						lambda=rates["lambda"], mu=rates["mu"],
+						min.age=0, max.age=0), timeout=3, onTimeout="error", silent=TRUE),
+						silent=TRUE)
 				}
 
-				#if any of that failed, use the midpoint branch.position
 				if(class(missingAge)=="try-error" | length(missingAge) == 0)
 				{
 					#identify the node that subtends the selected node to bind to
@@ -570,19 +546,11 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 				#the distance below bindTo to bind tip in.
 				else
 				{
-					#if you use the local bd.type, because you prune and slice trees, do not
-					#subtract bindToAge here or you'll get negative branches
-					if(bd.type=="local")
-					{
-						bindDist <- missingAge
-					}
-
-					#if you use global bd.type, subtract bindToAge. only relevant for internal
-					#nodes
-					else
-					{
-						bindDist <- missingAge - bindToAge
-					}
+					#you used to define bindDist as the missingAge minus the bindToAge (which
+					#was only relevant for internal nodes). however, now that you are pruning
+					#and slicing trees, do not subtract bindToAge here or you'll get negative
+					#branches!
+					bindDist <- missingAge
 
 					#add a check here that if bindDist is below the parent node
 					#it sets the age to the parent node. you would think this shouldn't be
@@ -599,7 +567,6 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 					}
 				}
 			}
-
 			else
 			{
 				stop("branch.position must be set to one of 'polytomy', 'midpoint', 'uniform', or 'bd'")
