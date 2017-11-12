@@ -482,7 +482,7 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 
 				#calculate the age of the missing speciation event. this can pose problems when
 				#it returns as 'numeric(0)', so check that below, and use the midpoint approach
-				#if it does. it's nice to also wrap the bdScaler in a evalWithTimeout function so
+				#if it does. it's nice to also wrap the bdScaler in a withTimeout function so
 				#that if the while loop within the function is taking too long, it'll bump to the
 				#midpoint method. if sliced contains X or more species, recalculate a local
 				#birth-death rate. otherwise use the global rate. this is arbitrary, but the
