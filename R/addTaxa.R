@@ -40,7 +40,7 @@
 #' 3 or higher, as the birth-death estimation will always fail for two taxa. It can also
 #' fail or timeout (see below) for larger cutoffs--when it does, it uses the midpoint
 #' branch.position method and moves onto the next taxon.
-#' @param timeout The amount of time to sample in search of a new branch position that
+#' @param time.out The amount of time to sample in search of a new branch position that
 #' accords with the local birth death estimation and that falls within the age of the
 #' branch to which the new species is being bound. Larger values may increase accuracy,
 #' but definitely increase run time. Default is 2 seconds. 
@@ -131,12 +131,13 @@
 #'   bd.type="global", no.trees=1)
 
 addTaxa <- function(tree, groupings, branch.position="midpoint", 
-	ini.lambda=1, ini.mu=0, bd.type, local.cutoff, timeout, no.trees,
+	ini.lambda=1, ini.mu=0, bd.type, local.cutoff, time.out, no.trees,
 	clade.membership, crown.can.move=TRUE)
 {
 	#set up a blank list and set aside the orig tree and DF to reload below
 	trees <- list()
 	clade.tables <- list()
+	midpoint.additions <- list()
 	origTree <- tree
 	if(!missing(clade.membership))
 	{
@@ -213,6 +214,10 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 	#begin outer loop where you aggregate complete trees
 	for(i in 1:no.trees)
 	{
+		#set up a placeholder to note if you were forced to use midpoint for any taxa
+		#that you intended to use bd for
+		placeholder <- 0
+
 		#begin inner loop where you build up individual trees
 		for(j in 1:dim(toAdd)[1])
 		{
@@ -484,41 +489,55 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 				#it returns as 'numeric(0)', so check that below, and use the midpoint approach
 				#if it does. it's nice to also wrap the bdScaler in a withTimeout function so
 				#that if the while loop within the function is taking too long, it'll bump to the
-				#midpoint method. if sliced contains X or more species, recalculate a local
-				#birth-death rate. otherwise use the global rate. this is arbitrary, but the
-				#smaller that number of species is, the more off the birth/death rates will be,
-				#and the more likely bdScaler gets stuck in a while loop. stop loop after 2s
-				if(length(sliced$tip.label) >= 3)
+				#midpoint method. if bd.type is local and sliced contains local.cutoff or more
+				#species, recalculate a local birth-death rate. otherwise use the global rate. 
+				if(bd.type=="local")
 				{
-					#wrap this up into a try statement, as sometimes, somehow, non-ultrametric
-					#trees are being created
-					newRates <- try(findRates(sliced,
-						prop.complete=(length(sliced$tip.label)-1)/length(sliced$tip.label),
-						ini.lambda=ini.lambda, ini.mu=ini.mu), silent=TRUE)
-					if(class(newRates)=="try-error")
+					if(length(sliced$tip.label) >= local.cutoff)
 					{
-						missingAge <- try(withTimeout(bdScaler(tree=sliced,
-							lambda=rates["lambda"], mu=rates["mu"],
-							min.age=0, max.age=0), elapsed=2, onTimeout="error", silent=TRUE),
-							silent=TRUE)
+						#wrap this up into a try statement, as sometimes, somehow, non-ultrametric
+						#trees are being created
+						newRates <- try(findRates(sliced,
+							prop.complete=(length(sliced$tip.label)-1)/length(sliced$tip.label),
+							ini.lambda=ini.lambda, ini.mu=ini.mu), silent=TRUE)
+						if(class(newRates)=="try-error")
+						{
+							missingAge <- try(withTimeout(bdScaler(tree=sliced,
+								lambda=rates["lambda"], mu=rates["mu"],
+								min.age=0, max.age=0), timeout=time.out, onTimeout="error", silent=TRUE),
+								silent=TRUE)
+						}
+						else
+						{
+							missingAge <- try(withTimeout(bdScaler(tree=sliced,
+								lambda=newRates["lambda"], mu=newRates["mu"],
+								min.age=0, max.age=0), timeout=time.out, onTimeout="error", silent=TRUE),
+								silent=TRUE)
+						}
 					}
+
 					else
 					{
 						missingAge <- try(withTimeout(bdScaler(tree=sliced,
-							lambda=newRates["lambda"], mu=newRates["mu"],
-							min.age=0, max.age=0), elapsed=2, onTimeout="error", silent=TRUE),
+							lambda=rates["lambda"], mu=rates["mu"],
+							min.age=0, max.age=0), timeout=time.out, onTimeout="error", silent=TRUE),
 							silent=TRUE)
 					}
+				}
+
+				else if(bd.type=="global")
+				{
+					missingAge <- try(withTimeout(bdScaler(tree, lambda=rates["lambda"], mu=rates["mu"],
+						min.age=bindToAge, max.age=parentAge), timeout=time.out, onTimeout="error",
+						silent=TRUE), silent=TRUE)
 				}
 
 				else
 				{
-					missingAge <- try(withTimeout(bdScaler(tree=sliced,
-						lambda=rates["lambda"], mu=rates["mu"],
-						min.age=0, max.age=0), elapsed=3, onTimeout="error", silent=TRUE),
-						silent=TRUE)
+					stop("if branch.position is set to 'bd', bd.type must be set to either 'local' or 'global'")
 				}
 
+				#if any of that failed use the midpoint method
 				if(class(missingAge)=="try-error" | length(missingAge) == 0)
 				{
 					#identify the node that subtends the selected node to bind to
@@ -539,6 +558,9 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 					#define the distance to bind as half distance to the parent node
 					bindDist <- tree$edge.length[nodeIndex]/2
 
+					#bump placeholder up if you had to do an addition w midpoint
+					placeholder <- placeholder + 1
+
 					warning("used 'midpoint' branch.position argument for addition of a taxon; corsim was not able to generate an appropriate split before function timeout")
 				}
 
@@ -546,11 +568,17 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 				#the distance below bindTo to bind tip in.
 				else
 				{
-					#you used to define bindDist as the missingAge minus the bindToAge (which
-					#was only relevant for internal nodes). however, now that you are pruning
-					#and slicing trees, do not subtract bindToAge here or you'll get negative
-					#branches!
-					bindDist <- missingAge
+					#when pruning and slicing trees, do not subtract bindToAge or you'll get negative
+					#branches! if you do use the global method, then subtract bindToAge
+					if(bd.type=="local")
+					{
+						bindDist <- missingAge
+					}
+					
+					else
+					{
+						bindDist <- missingAge - bindToAge
+					}
 
 					#add a check here that if bindDist is below the parent node
 					#it sets the age to the parent node. you would think this shouldn't be
@@ -639,8 +667,19 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 		{
 			clade.tables[[i]] <- "clade.membership table not provided"
 		}
+
+		if(!missing(midpoint.additions))
+		{
+			midpoint.additions[[i]] <- placeholder
+		}
 		
-		#set tree back to original tree and original clade.membership
+		else
+		{
+			midpoint.additions[[i]] <- "did not use bd method"
+		}
+
+		
+		#set everything back to original
 		tree <- origTree
 
 		if(!missing(clade.membership))
@@ -651,6 +690,6 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 	
 	#set the class of trees to multiPhylo, bind with clade.tables and return
 	class(trees) <- "multiPhylo"
-	results <- list(trees=trees, clade.tables=clade.tables)
+	results <- list(trees=trees, clade.tables=clade.tables, midpoint.additions=midpoint.additions)
 	results
 }

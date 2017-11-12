@@ -5,7 +5,7 @@
 \title{Bind species to hypothesized relatives in a phylogeny}
 \usage{
 addTaxa(tree, groupings, branch.position = "midpoint", ini.lambda = 1,
-  ini.mu = 0, bd.type, local.cutoff, timeout, no.trees, clade.membership,
+  ini.mu = 0, bd.type, local.cutoff, time.out, no.trees, clade.membership,
   crown.can.move = TRUE)
 }
 \arguments{
@@ -51,7 +51,7 @@ when this cutoff is set low, but smaller numbers increase run time. The cutoff m
 fail or timeout (see below) for larger cutoffs--when it does, it uses the midpoint
 branch.position method and moves onto the next taxon.}
 
-\item{timeout}{The amount of time to sample in search of a new branch position that
+\item{time.out}{The amount of time to sample in search of a new branch position that
 accords with the local birth death estimation and that falls within the age of the
 branch to which the new species is being bound. Larger values may increase accuracy,
 but definitely increase run time. Default is 2 seconds.}
