@@ -103,7 +103,7 @@
 #' @importFrom phytools bind.tip
 #' @importFrom ape is.binary.tree is.monophyletic getMRCA branching.times
 #' @importFrom paleotree timeSliceTree
-#' @importFrom R.utils evalWithTimeout
+#' @importFrom R.utils withTimeout
 #'
 #' @references Mast et al. 2015. Paraphyly changes understanding of timing and tempo of 
 #' diversification in subtribe Hakeinae (Proteaceae), a giant Australian plant radiation.
@@ -497,25 +497,25 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 						ini.lambda=ini.lambda, ini.mu=ini.mu), silent=TRUE)
 					if(class(newRates)=="try-error")
 					{
-						missingAge <- try(evalWithTimeout(bdScaler(tree=sliced,
+						missingAge <- try(withTimeout(bdScaler(tree=sliced,
 							lambda=rates["lambda"], mu=rates["mu"],
-							min.age=0, max.age=0), timeout=2, onTimeout="error", silent=TRUE),
+							min.age=0, max.age=0), elapsed=2, onTimeout="error", silent=TRUE),
 							silent=TRUE)
 					}
 					else
 					{
-						missingAge <- try(evalWithTimeout(bdScaler(tree=sliced,
+						missingAge <- try(withTimeout(bdScaler(tree=sliced,
 							lambda=newRates["lambda"], mu=newRates["mu"],
-							min.age=0, max.age=0), timeout=2, onTimeout="error", silent=TRUE),
+							min.age=0, max.age=0), elapsed=2, onTimeout="error", silent=TRUE),
 							silent=TRUE)
 					}
 				}
 
 				else
 				{
-					missingAge <- try(evalWithTimeout(bdScaler(tree=sliced,
+					missingAge <- try(withTimeout(bdScaler(tree=sliced,
 						lambda=rates["lambda"], mu=rates["mu"],
-						min.age=0, max.age=0), timeout=3, onTimeout="error", silent=TRUE),
+						min.age=0, max.age=0), elapsed=3, onTimeout="error", silent=TRUE),
 						silent=TRUE)
 				}
 
