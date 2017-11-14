@@ -29,6 +29,9 @@
 #' of branch position is chosen. Defaults to 1.
 #' @param ini.mu Initial extinction value for the "bd" optimization, if that option
 #' of branch position is chosen. Defaults to 0.1.
+#' @param rate.estimate Whether to use 'laser', 'ape', or 'diversitree' to
+#' calculate diversification rates. The latter is the only of those that can account for
+#' missing taxa, but in my experience returns systematically biased values.
 #' @param bd.type Whether to use a 'local' or a 'global' birth-death estimation. The former
 #' is slower but tends to perform better, particularly if there are shifts in diversification
 #' rates in the tree. The latter runs faster.
@@ -41,7 +44,7 @@
 #' 3 or higher, as the birth-death estimation will always fail for two taxa. It can also
 #' fail or timeout (see below) for larger cutoffs--when it does, it uses the midpoint
 #' branch.position method and moves onto the next taxon.
-#' @param timeout The amount of time to sample in search of a new branch position that
+#' @param time.out The amount of time to sample in search of a new branch position that
 #' accords with the local birth death estimation and that falls within the age of the
 #' branch to which the new species is being bound. Larger values may increase accuracy,
 #' but definitely increase run time. Default is 2 seconds. 
@@ -119,17 +122,18 @@
 #' #to the addTaxa function
 #' sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",
 #'   bd.type="global", no.trees=3, clade.membership=cladesDF, crown.can.move=TRUE,
-#'   calc.from.crown=TRUE, epsilon=0.1)
+#'   calc.from.crown=TRUE, epsilon=0.1, rate.estimate="ape")
 
 divRates <- function(tree, groupings, branch.position, ini.lambda=1,
-	ini.mu=0.1, bd.type, local.cutoff, timeout, no.trees, clade.membership,
-	crown.can.move, calc.from.crown, epsilon)
+	ini.mu=0.1, bd.type, rate.estimate, local.cutoff, time.out, no.trees,
+	clade.membership, crown.can.move, calc.from.crown, epsilon)
 {
 	#generate your complete trees and updated tables of to which clade each sp belongs
 	treesNtables <- addTaxa(tree=tree, groupings=groupings, 
 		branch.position=branch.position, ini.lambda=ini.lambda, ini.mu=ini.mu,
-		bd.type=bd.type, local.cutoff=local.cutoff, timeout=timeout,
-		no.trees=no.trees, clade.membership=clade.membership, crown.can.move)
+		bd.type=bd.type, rate.estimate=rate.estimate, local.cutoff=local.cutoff,
+		time.out=time.out, no.trees=no.trees, clade.membership=clade.membership,
+		crown.can.move)
 	#lapply your getMRCAs function over these complete trees and tables. you will get a
 	#list of lists of most recent common ancestors for each named clade
 	mrcas <- lapply(1:length(treesNtables[[1]]), function(x) 

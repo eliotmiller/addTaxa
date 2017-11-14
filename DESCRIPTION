@@ -18,7 +18,8 @@ Imports:
     diversitree,
     TreeSim,
     paleotree,
-    R.utils
+    R.utils,
+    laser
 Suggests:
     testthat
 LazyData: true

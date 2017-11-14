@@ -4,7 +4,7 @@
 \alias{findRates}
 \title{Use diversitree to find ML speciation and extinction rates}
 \usage{
-findRates(tree, prop.complete, ini.lambda = 1, ini.mu = 0.1)
+findRates(tree, prop.complete, ini.lambda = 1, ini.mu = 0.1, rate.estimate)
 }
 \arguments{
 \item{tree}{A phylogeny in ape format.}
@@ -16,6 +16,10 @@ contained in it. For instance, if a tree contains 9 species, but there should be
 \item{ini.lambda}{Initial speciation value for the optimization. Defaults to 1.}
 
 \item{ini.mu}{Initial extinction value for the optimization. Defaults to 0.1.}
+
+\item{rate.estimate}{Whether to use 'laser', 'ape', or 'diversitree' to
+calculate diversification rates. The latter is the only of those that can account for
+missing taxa, but in my experience returns systematically biased values.}
 }
 \value{
 A named numeric vector with the estimated speciation and extinction rates.
@@ -33,7 +37,7 @@ data(bird.families)
 
 tree <- multi2di(bird.families)
 
-findRates(tree, 0.95)
+findRates(tree=tree, prop.complete=0.95, rate.estimate="diversitree")
 }
 \references{
 ETM unpublished

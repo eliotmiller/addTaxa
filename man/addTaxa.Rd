@@ -5,8 +5,8 @@
 \title{Bind species to hypothesized relatives in a phylogeny}
 \usage{
 addTaxa(tree, groupings, branch.position = "midpoint", ini.lambda = 1,
-  ini.mu = 0, bd.type, local.cutoff, time.out, no.trees, clade.membership,
-  crown.can.move = TRUE)
+  ini.mu = 0, rate.estimate, bd.type, local.cutoff, time.out, no.trees,
+  clade.membership, crown.can.move = TRUE)
 }
 \arguments{
 \item{tree}{An ape-style phylogenetic tree.}
@@ -36,6 +36,10 @@ of branch position is chosen. Defaults to 1.}
 
 \item{ini.mu}{Initial extinction value for the "bd" optimization, if that option
 of branch position is chosen. Defaults to 0.1.}
+
+\item{rate.estimate}{Whether to use 'laser', 'ape', or 'diversitree' to
+calculate diversification rates. The latter is the only of those that can account for
+missing taxa, but in my experience returns systematically biased values.}
 
 \item{bd.type}{Whether to use a 'local' or a 'global' birth-death estimation. The former
 is slower but tends to perform better, particularly if there are shifts in diversification
@@ -137,7 +141,7 @@ example <- tipDropper(tree, groupsDF, 100)
 
 #add those missing species back in
 newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",
-  bd.type="global", no.trees=1)
+  rate.estimate="ape", bd.type="global", no.trees=1)
 }
 \references{
 Mast et al. 2015. Paraphyly changes understanding of timing and tempo of 

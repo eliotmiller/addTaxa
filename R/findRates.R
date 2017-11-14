@@ -9,6 +9,9 @@
 #' 10 species in the tree, set sampling to 0.9.
 #' @param ini.lambda Initial speciation value for the optimization. Defaults to 1.
 #' @param ini.mu Initial extinction value for the optimization. Defaults to 0.1.
+#' @param rate.estimate Whether to use 'laser', 'ape', or 'diversitree' to
+#' calculate diversification rates. The latter is the only of those that can account for
+#' missing taxa, but in my experience returns systematically biased values.
 #'
 #' @details Add details.
 #' 
@@ -17,7 +20,9 @@
 #' @export
 #'
 #' @importFrom diversitree make.bd find.mle
-#' @importFrom ape is.binary.tree multi2di
+#' @importFrom ape is.binary.tree multi2di birthdeath
+#' @importFrom laser bd
+#' @importFrom phytools bd
 #'
 #' @references ETM unpublished
 #'
@@ -27,18 +32,46 @@
 #'
 #' tree <- multi2di(bird.families)
 #'
-#' findRates(tree, 0.95)
+#' findRates(tree=tree, prop.complete=0.95, rate.estimate="diversitree")
 
-findRates <- function(tree, prop.complete, ini.lambda=1, ini.mu=0.1)
+findRates <- function(tree, prop.complete, ini.lambda=1, ini.mu=0.1, rate.estimate)
 {
-	#if the tree is not binary then this function will fail. if that's the case,
-	#convert polytomies to bifurcating branches of length 0. note that this does
-	#not 
-	if(!ape::is.binary.tree(tree))
+	if(rate.estimate=="laser")
 	{
-		tree <- ape::multi2di(tree)
+		#pull the branching times, pass to laser
+		temp <- laser::bd(TreeSim::getx(tree))
+
+		#make some quick calculations of lambda and mu
+		tempLambda <- temp$r - (temp$r * temp$a)
+		tempMu <- temp$r * temp$a
+
+		finalResults <- c(tempLambda, tempMu)
+		names(finalResults) <- c("lambda","mu")
 	}
-	iniLik <- diversitree::make.bd(tree, sampling.f=prop.complete)
-	results <- diversitree::find.mle(iniLik, method="subplex", c(ini.lambda,ini.mu))
-	results$par
+
+	else if(rate.estimate=="ape")
+	{
+		finalResults <- phytools::bd(ape::birthdeath(tree))
+		names(finalResults) <- c("lambda","mu")
+	}
+
+	else if(rate.estimate=="diversitree")
+	{
+		#if the tree is not binary then this function will fail. if that's the case,
+		#convert polytomies to bifurcating branches of length 0. note that this does
+		#not mean the actual tree ends up with polytomies
+		if(!ape::is.binary.tree(tree))
+		{
+			tree <- ape::multi2di(tree)
+		}
+		iniLik <- diversitree::make.bd(tree, sampling.f=prop.complete)
+		results <- diversitree::find.mle(iniLik, method="subplex", c(ini.lambda,ini.mu))
+		finalResults <- results$par
+	}
+
+	else
+	{
+		stop("rate.estimate must be set to one of 'laser', 'ape', or 'diversitree'")
+	}
+	finalResults
 }

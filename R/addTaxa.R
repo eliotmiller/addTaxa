@@ -28,6 +28,9 @@
 #' of branch position is chosen. Defaults to 1.
 #' @param ini.mu Initial extinction value for the "bd" optimization, if that option
 #' of branch position is chosen. Defaults to 0.1.
+#' @param rate.estimate Whether to use 'laser', 'ape', or 'diversitree' to
+#' calculate diversification rates. The latter is the only of those that can account for
+#' missing taxa, but in my experience returns systematically biased values.
 #' @param bd.type Whether to use a 'local' or a 'global' birth-death estimation. The former
 #' is slower but tends to perform better, particularly if there are shifts in diversification
 #' rates in the tree. The latter runs faster.
@@ -128,11 +131,11 @@
 #'
 #' #add those missing species back in
 #' newTrees <- addTaxa(tree=example, groupings=groupsDF, branch.position="bd",
-#'   bd.type="global", no.trees=1)
+#'   rate.estimate="ape", bd.type="global", no.trees=1)
 
 addTaxa <- function(tree, groupings, branch.position="midpoint", 
-	ini.lambda=1, ini.mu=0, bd.type, local.cutoff, time.out, no.trees,
-	clade.membership, crown.can.move=TRUE)
+	ini.lambda=1, ini.mu=0, rate.estimate, bd.type, local.cutoff, time.out,
+	no.trees, clade.membership, crown.can.move=TRUE)
 {
 	#set up a blank list and set aside the orig tree and DF to reload below
 	trees <- list()
@@ -208,7 +211,7 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 	{
 		rates <- findRates(origTree,
 			prop.complete=length(origTree$tip.label)/dim(groupings)[1],
-			ini.lambda=ini.lambda, ini.mu=ini.mu)
+			ini.lambda=ini.lambda, ini.mu=ini.mu, rate.estimate=rate.estimate)
 	}
 
 	#begin outer loop where you aggregate complete trees
@@ -240,7 +243,7 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 				names(problemNodes) <- "root"
 			}
 
-			#find all tips in the species group that tip i belongs to
+			#find all tips in the species group that tip j belongs to
 			relatedSpp <- groupings$species[groupings$group == toAdd$group[j]]
 
 			#this included species that potentially are not yet in the tree. drop any
@@ -351,7 +354,7 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 					#monophyletic. you do not need to check if it is the root, did so above
 					if(length(unique(groupToExamine)) == 1)
 					{
-						#identify the set of possible nodes that descend from parent
+						#identify the set of nodes that descend from parent
 						dNodes <- geiger:::.get.descendants.of.node(node=parent,
 							phy=tree, tips=FALSE)
 						allNodes <- c(parent, dNodes)
@@ -452,6 +455,7 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 				#but seems like over thinking it. add later if necessary
 				bindDist <- stats::runif(n=1, min=0, max=tree$edge.length[nodeIndex])
 			}
+
 			else if(branch.position=="bd")
 			{
 				#identify the node that subtends the selected node to bind to
@@ -477,13 +481,17 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 				pruned <- extract.clade(tree, parent)
 
 				#slice the tree at the bindToAge. if this is 0 (i.e. bindTo was a tip), the
-				#tree is returned unmodified. if it's not a tip, then a polytomy is left at
-				#the slice point. you can add a small constant to the slice point if this
-				#is an issue. adding the root.time piece is to get it to not throw a warning
+				#tree is returned unmodified. if it's not a tip, then a polytomy with some
+				#weird numerical precision issues can be left at the tip. so, add a slight
+				#constant here to prune back just past the node. this is tree-scale-invariant,
+				#so not ideal, but it's a very small value. 
+				#paleotree can occasionally throw an error that has to do with slice time being
+				#later than tips. not sure what this is about. if it does this, use the global
+				#birth death approach
+				#adding the root.time piece is to get paleotree to not throw a warning
 				pruned$root.time = max(TreeSim::getx(pruned))
-				sliced <- paleotree::timeSliceTree(ttree=pruned,
-					sliceTime=bindToAge, plot=FALSE)
-				pruned$root.time <- NULL
+				sliced <- try(paleotree::timeSliceTree(ttree=pruned,
+					sliceTime=bindToAge+10^-7, plot=FALSE), silent=TRUE)
 
 				#calculate the age of the missing speciation event. this can pose problems when
 				#it returns as 'numeric(0)', so check that below, and use the midpoint approach
@@ -491,7 +499,7 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 				#that if the while loop within the function is taking too long, it'll bump to the
 				#midpoint method. if bd.type is local and sliced contains local.cutoff or more
 				#species, recalculate a local birth-death rate. otherwise use the global rate. 
-				if(bd.type=="local")
+				if(bd.type=="local" & class(sliced)!="try-error")
 				{
 					if(length(sliced$tip.label) >= local.cutoff)
 					{
@@ -499,37 +507,45 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 						#trees are being created
 						newRates <- try(findRates(sliced,
 							prop.complete=(length(sliced$tip.label)-1)/length(sliced$tip.label),
-							ini.lambda=ini.lambda, ini.mu=ini.mu), silent=TRUE)
+							ini.lambda=ini.lambda, ini.mu=ini.mu, rate.estimate=rate.estimate),
+							silent=TRUE)
+						
+						#if it was not able to calculate a new rate, use the global rate on the
+						#sliced tree
 						if(class(newRates)=="try-error")
 						{
-							missingAge <- try(withTimeout(bdScaler(tree=sliced,
+							missingAge <- try(R.utils::withTimeout(bdScaler(tree=sliced,
 								lambda=rates["lambda"], mu=rates["mu"],
-								min.age=0, max.age=0), timeout=time.out, onTimeout="error", silent=TRUE),
+								min.age=0, max.age=0), timeout=time.out, onTimeout="error"),
 								silent=TRUE)
 						}
+						
+						#otherwise use the new rate on the sliced tree
 						else
 						{
-							missingAge <- try(withTimeout(bdScaler(tree=sliced,
+							missingAge <- try(R.utils::withTimeout(bdScaler(tree=sliced,
 								lambda=newRates["lambda"], mu=newRates["mu"],
-								min.age=0, max.age=0), timeout=time.out, onTimeout="error", silent=TRUE),
+								min.age=0, max.age=0), timeout=time.out, onTimeout="error"),
 								silent=TRUE)
 						}
 					}
 
 					else
 					{
-						missingAge <- try(withTimeout(bdScaler(tree=sliced,
+						missingAge <- try(R.utils::withTimeout(bdScaler(tree=sliced,
 							lambda=rates["lambda"], mu=rates["mu"],
-							min.age=0, max.age=0), timeout=time.out, onTimeout="error", silent=TRUE),
+							min.age=0, max.age=0), timeout=time.out, onTimeout="error"),
 							silent=TRUE)
 					}
 				}
 
-				else if(bd.type=="global")
+				#if bd.type is global or if paleotree encountered an error, use global rate
+				#on whole tree and force branch to be within the correct time period
+				else if(bd.type=="global" | class(sliced)=="try-error")
 				{
-					missingAge <- try(withTimeout(bdScaler(tree, lambda=rates["lambda"], mu=rates["mu"],
-						min.age=bindToAge, max.age=parentAge), timeout=time.out, onTimeout="error",
-						silent=TRUE), silent=TRUE)
+					missingAge <- try(R.utils::withTimeout(bdScaler(tree, lambda=rates["lambda"],
+						mu=rates["mu"], min.age=bindToAge, max.age=parentAge), timeout=time.out,
+						onTimeout="error"), silent=TRUE)
 				}
 
 				else
@@ -569,7 +585,8 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 				else
 				{
 					#when pruning and slicing trees, do not subtract bindToAge or you'll get negative
-					#branches! if you do use the global method, then subtract bindToAge
+					#branches! if you do use the global method, then subtract bindToAge. is it possible
+					#you want to add the small constant you added to slice tree back here...?
 					if(bd.type=="local")
 					{
 						bindDist <- missingAge

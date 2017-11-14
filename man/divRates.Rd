@@ -5,8 +5,8 @@
 \title{Calculate sensitivity of absolute diversification rates to missing taxa}
 \usage{
 divRates(tree, groupings, branch.position, ini.lambda = 1, ini.mu = 0.1,
-  bd.type, local.cutoff, timeout, no.trees, clade.membership, crown.can.move,
-  calc.from.crown, epsilon)
+  bd.type, rate.estimate, local.cutoff, time.out, no.trees, clade.membership,
+  crown.can.move, calc.from.crown, epsilon)
 }
 \arguments{
 \item{tree}{An ape-style phylogenetic tree}
@@ -41,6 +41,10 @@ of branch position is chosen. Defaults to 0.1.}
 is slower but tends to perform better, particularly if there are shifts in diversification
 rates in the tree. The latter runs faster.}
 
+\item{rate.estimate}{Whether to use 'laser', 'ape', or 'diversitree' to
+calculate diversification rates. The latter is the only of those that can account for
+missing taxa, but in my experience returns systematically biased values.}
+
 \item{local.cutoff}{If using the local form of the bd method, this argument specifies
 at what point the local neighborhood is deemed sufficiently large to estimate a local
 diversification rate. For example, if this argument is set to 10, a local estimate is
@@ -51,7 +55,7 @@ when this cutoff is set low, but smaller numbers increase run time. The cutoff m
 fail or timeout (see below) for larger cutoffs--when it does, it uses the midpoint
 branch.position method and moves onto the next taxon.}
 
-\item{timeout}{The amount of time to sample in search of a new branch position that
+\item{time.out}{The amount of time to sample in search of a new branch position that
 accords with the local birth death estimation and that falls within the age of the
 branch to which the new species is being bound. Larger values may increase accuracy,
 but definitely increase run time. Default is 2 seconds.}
@@ -134,7 +138,7 @@ cladesDF <- rbind(graptemysEtc, gopherus)
 #to the addTaxa function
 sensitivity <- divRates(tree=example, groupings=groupsDF, branch.position="bd",
   bd.type="global", no.trees=3, clade.membership=cladesDF, crown.can.move=TRUE,
-  calc.from.crown=TRUE, epsilon=0.1)
+  calc.from.crown=TRUE, epsilon=0.1, rate.estimate="ape")
 }
 \references{
 Mast et al. 2015. Paraphyly changes understanding of timing and tempo of 
