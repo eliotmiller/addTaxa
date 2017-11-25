@@ -154,6 +154,13 @@ addTaxa <- function(tree, groupings, branch.position="midpoint",
 		stop("Input tree is not binary. Cannot currently account for this.")
 	}
 
+	#the function definitely fails with a weird error if the tree is not
+	#ultrametric. check and stop if so
+	if(is.ultrametric(tree) == FALSE)
+	{
+		stop("Input tree is not ultrametric.")
+	}
+
 	#force groupings DF to character if it isn't. do same for clade.membership
 	#if it is provided
 	groupings[,1] <- as.character(groupings[,1])

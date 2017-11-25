@@ -51,7 +51,9 @@ findRates <- function(tree, prop.complete, ini.lambda=1, ini.mu=0.1, rate.estima
 
 	else if(rate.estimate=="ape")
 	{
-		finalResults <- phytools::bd(ape::birthdeath(tree))
+		#ape likes to print lots of messages about this when things go
+		#awry. see if you can suppress them
+		finalResults <- suppressMessages(phytools::bd(ape::birthdeath(tree)))
 		names(finalResults) <- c("lambda","mu")
 	}
 
