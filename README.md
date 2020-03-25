@@ -14,7 +14,7 @@ addTaxa is currently available only from GitHub.
 
 ```r
 library(devtools)
-install_github("addTaxa/eliotmiller")
+install_github("eliotmiller/addTaxa")
 library(addTaxa)
 ```
 
