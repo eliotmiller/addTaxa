@@ -4,9 +4,20 @@
 \alias{addTaxa}
 \title{Bind species to hypothesized relatives in a phylogeny}
 \usage{
-addTaxa(tree, groupings, branch.position = "midpoint", ini.lambda = 1,
-  ini.mu = 0, rate.estimate, bd.type, local.cutoff, time.out, no.trees,
-  clade.membership, crown.can.move = TRUE)
+addTaxa(
+  tree,
+  groupings,
+  branch.position = "midpoint",
+  ini.lambda = 1,
+  ini.mu = 0,
+  rate.estimate,
+  bd.type,
+  local.cutoff,
+  time.out,
+  no.trees,
+  clade.membership,
+  crown.can.move = TRUE
+)
 }
 \arguments{
 \item{tree}{An ape-style phylogenetic tree.}

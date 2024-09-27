@@ -4,9 +4,22 @@
 \alias{divRates}
 \title{Calculate sensitivity of absolute diversification rates to missing taxa}
 \usage{
-divRates(tree, groupings, branch.position, ini.lambda = 1, ini.mu = 0.1,
-  bd.type, rate.estimate, local.cutoff, time.out, no.trees, clade.membership,
-  crown.can.move, calc.from.crown, epsilon)
+divRates(
+  tree,
+  groupings,
+  branch.position,
+  ini.lambda = 1,
+  ini.mu = 0.1,
+  bd.type,
+  rate.estimate,
+  local.cutoff,
+  time.out,
+  no.trees,
+  clade.membership,
+  crown.can.move,
+  calc.from.crown,
+  epsilon
+)
 }
 \arguments{
 \item{tree}{An ape-style phylogenetic tree}
