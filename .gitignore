@@ -1,2 +1,14 @@
+# macOS system files
+.DS_Store
 
-*.history
+# RStudio history files
+.Rhistory
+R/.Rhistory
+
+# Ignore any .DS_Store in subdirectories
+R/.DS_Store
+
+# RStudio application history files
+.Rapp.history
+R/.Rapp.history
+man/.Rapp.history
