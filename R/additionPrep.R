@@ -38,11 +38,12 @@
 
 additionPrep <- function(tree, addition.statements, missing.sp)
 {
+  #commenting out for now. not positive this is needed
   #throw an error if the tree is fully dichotomous
-  if(is.binary(tree) == FALSE)
-  {
-    stop("Input tree is not binary. Cannot currently account for this.")
-  }
+  #if(is.binary(tree) == FALSE)
+  #{
+  #  stop("Input tree is not binary. Cannot currently account for this.")
+  #}
   
   #the function definitely fails with a weird error if the tree is not
   #ultrametric. check and stop if so
