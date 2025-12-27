@@ -39,7 +39,7 @@
 additionPrep <- function(tree, addition.statements, missing.sp)
 {
   #commenting out for now. not positive this is needed
-  #throw an error if the tree is fully dichotomous
+  #throw an error if the tree is not fully dichotomous
   #if(is.binary(tree) == FALSE)
   #{
   #  stop("Input tree is not binary. Cannot currently account for this.")
@@ -65,7 +65,7 @@ additionPrep <- function(tree, addition.statements, missing.sp)
   
   #set up some variables to use for messaging reports.
   #this will change to 1 if you were unable to use the second element in add.to
-  bumpedBack <- 0
+  bumpedBack <- -1
   
   #this will change to 1 if you respected some do.not.break statements
   respected <- 0
@@ -80,192 +80,117 @@ additionPrep <- function(tree, addition.statements, missing.sp)
   toParse <- addition.statements$add.to[addition.statements$species==missing.sp]
   
   #split it on semi-colons
-  splitUp <- unlist(strsplit(toParse, "; "))
+  splitUp <- as.list(strsplit(toParse, "; ")[[1]])
   
-  #if the length is 2, check whether the second taxon/species group exists, and
-  #focus on that if so. lengths of > 2 will be ignored for now. if the groups don't
-  #exist, or length equals 1, focus on the first element
-  if(length(splitUp)==2)
+  # convert all taxon statements to species groups.
+  for(i in 1:length(splitUp))
   {
-    theFamily <- unique(addition.statements$family[addition.statements$family==splitUp[2]])
-    theGenus <- unique(addition.statements$genus[addition.statements$genus==splitUp[2]])
+    # see what matches to genus or to family
+    theFamily <- unique(addition.statements$family[addition.statements$family==splitUp[[i]]])
+    theGenus <- unique(addition.statements$genus[addition.statements$genus==splitUp[[i]]])
     
-    #if one of these exists, set tempTaxon to be that thing
+    # if splitUp[[i]] is a family, sub in those species to the statement
     if(length(theFamily)==1 & length(theGenus)==0)
     {
       tempTaxon <- theFamily
-      
-      #check whether that family is in the tree yet
       allFamilySpp <- addition.statements$species[addition.statements$family==tempTaxon]
-      
-      #if at least one species from the family is in the tree, set taxon to be that family
-      if(sum(tree$tip.label %in% allFamilySpp) > 0)
-      {
-        taxon <- tempTaxon
-      }
-      
-      #otherwise set taxon to be the first element, and note you did it
-      else
-      {
-        taxon <- splitUp[1]
-        bumpedBack <- 1
-      }
+      splitUp[[i]] <- allFamilySpp
     }
     
+    # if it's a genus, handle accordingly
     else if(length(theFamily)==0 & length(theGenus)==1)
     {
       tempTaxon <- theGenus
-      
-      #check whether that genus is in the tree yet
       allGenusSpp <- addition.statements$species[addition.statements$genus==tempTaxon]
-      
-      #if at least one species from the genus is in the tree, set taxon to be that genus
-      if(sum(tree$tip.label %in% allGenusSpp) > 0)
-      {
-        taxon <- tempTaxon
-      }
-      
-      #otherwise set taxon to be the first element, and note you did it
-      else
-      {
-        taxon <- splitUp[1]
-        bumpedBack <- 1
-      }
+      splitUp[[i]] <- allGenusSpp
     }
-
+    
+    # haven't encountered this but just in case
     else if(length(theFamily)==1 & length(theGenus)==1)
     {
       #throw an error if both of these are 1
       stop("Genus and family names cannot overlap")
     }
-        
-    #otherwise assume it's a species group and try there
+    
+    # otherwise assume it already is a species group and handle accordingly
     else
     {
-      parsedSpp <- unlist(strsplit(splitUp[2], ", "))
+      parsedSpp <- unlist(strsplit(splitUp[[i]], ", "))
       
-      #if at least one species from the group is in the tree, set taxon to be that group
-      if(sum(tree$tip.label %in% parsedSpp) > 0)
+      # add a check to ensure everything is correctly spelled if species are being added directly
+      checks <- addition.statements$species[addition.statements$species %in% parsedSpp]
+      
+      # if these are not of equal length, there's a misspelling or something
+      if(length(checks) != length(parsedSpp))
       {
-        taxon <- parsedSpp
+        print(missing.sp)
+        stop("One of your species is misspelled")
       }
       
-      #otherwise set taxon to be the first element, and note you did it
-      else
-      {
-        taxon <- splitUp[1]
-        bumpedBack <- 1
-      }
+      # set it into the right place
+      splitUp[[i]] <- parsedSpp
     }
   }
   
-  #if length != 2, just set taxon to be the first element
-  else
+  # now figure out which statement we'll use. start at end of statements, which
+  # we assume is most specific/precise, and work from there. reverse these and
+  # start at the end
+  targets <- rev(splitUp)
+  for(i in 1:length(targets))
   {
-    taxon <- splitUp[1]
-  }
-
-  #we need to re-figure out if the second element is a genus, family, or species group,
-  #or if there was never a second element, figure it out for the first time
-  theFamily <- unique(addition.statements$family[addition.statements$family==taxon])
-  theGenus <- unique(addition.statements$genus[addition.statements$genus==taxon])
-  
-  #if there is only one of these things find all the species that belong to that
-  #taxon and check whether they are monophyletic
-  if(length(theFamily)==1 & length(theGenus)==0)
-  {
-    #this will be all the species in the whole family
-    allSpp <- addition.statements$species[addition.statements$family==theFamily]
+    # figure out if any of the species is already in the tree
+    spp <- tree$tip.label[tree$tip.label %in% targets[[i]]]
     
-    #subset to those that are actually in the family
-    spp <- allSpp[allSpp %in% tree$tip.label]
+    # log one for each iteration you bump up. you start at -1, so just start now
+    bumpedBack <- bumpedBack + 1
     
-    #store a warning if spp are not monophyletic
-    if(!is.monophyletic(tree, spp))
+    # now break out of the loop if spp contains anything
+    if(length(spp) > 0)
     {
-      warnMessages <- "The identified addition taxon is not monophyletic"
+      break
     }
   }
   
-  #do the same for a genus here
-  else if(length(theFamily)==0 & length(theGenus)==1)
-  {
-    #this will be all the species in the whole genus
-    allSpp <- addition.statements$species[addition.statements$genus==theGenus]
-    
-    #subset to those that are actually in the genus
-    spp <- allSpp[allSpp %in% tree$tip.label]
-    
-    #store a warning if spp are not monophyletic
-    if(!is.monophyletic(tree, spp))
-    {
-      warnMessages <- "The identified addition taxon is not monophyletic"
-    }
-  }
-  
-  #if both of these are length = 1, something is wrong
-  else if(length(theFamily)==1 & length(theGenus)==1)
-  {
-    stop("Genus and family names cannot overlap")
-  }
-  
-  #otherwise assume this is a species group. confirm all species are valid first
-  else
-  {
-    #remember that you will have passed it a single character vector split up by commas
-    #with spaces. parse this into a longer vector
-    parsedSpp <- unlist(strsplit(taxon, ", "))
-    
-    allSpp <- addition.statements$species[addition.statements$species %in% parsedSpp]
-    
-    #if these are not of equal length, there's a misspelling or something
-    if(length(allSpp) != length(parsedSpp))
-    {
-      print(missing.sp)
-      stop("One of your species is misspelled")
-    }
-    
-    #subset to species in the tree
-    spp <- allSpp[allSpp %in% tree$tip.label]
-  }
-  
-  #if the length of spp == 0, then there are no species in the tree from that group.
-  #and now we are out of luck
-  if(length(spp) == 0)
+  # if spp doesn't exist yet (it would have been created if any of splitUp
+  # contained a taxon in the tree), throw an error
+  if(!exists("spp"))
   {
     stop("None of those species are in the tree yet")
   }
   
-  #otherwise identify the valid node(s) you can bind missing.sp to
+  #store a warning if spp are not monophyletic
+  if(!is.monophyletic(tree, spp))
+  {
+    warnMessages <- "The identified addition taxon is not monophyletic"
+  }
+
+  # now process your addition statement. if there is only a single species here,
+  # you need to get MRCA in a different way
+  if(length(spp)==1)
+  {
+    allNodes <- which(tree$tip.label==spp)
+  }
+  
+  #grab the MRCA otherwise
   else
   {
-    #if there is only a single species here, you need to get MRCA in a different way
-    if(length(spp)==1)
+    crownNode <- getMRCA(tree, spp)
+    
+    #confirm the crown node isn't the root. that would be bad
+    if(crownNode == rootNode)
     {
-      allNodes <- which(tree$tip.label==spp)
+      stop("Your crown node is your root node")
     }
     
-    #grab the MRCA otherwise
+    #otherwise you are going to consider the MRCA plus all descendant nodes as
+    #potential binding sites. we are ignoring issues of existing non-monophyly here (we
+    #threw a warning above but that was all)
     else
     {
-      crownNode <- getMRCA(tree, spp)
-      
-      #confirm the crown node isn't the root. that would be bad
-      if(crownNode == rootNode)
-      {
-        stop("Your crown node is your root node")
-      }
-      
-      #otherwise you are going to consider the MRCA plus all descendant nodes as
-      #potential binding sites. we are ignoring issues of non-monophyly here (we
-      #threw a warning above but that was all)
-      else
-      {
-        #tips=FALSE also returns internal nodes
-        dNodes <- geiger:::.get.descendants.of.node(node=crownNode,
-                                                    phy=tree, tips=FALSE)
-        allNodes <- c(crownNode, dNodes)
-      }
+      #tips=FALSE also returns internal nodes
+      dNodes <- geiger:::.get.descendants.of.node(node=crownNode,
+                                                  phy=tree, tips=FALSE)
+      allNodes <- c(crownNode, dNodes)
     }
   }
   
@@ -275,86 +200,74 @@ additionPrep <- function(tree, addition.statements, missing.sp)
   toParse <- addition.statements$do.not.break[addition.statements$species==missing.sp]
   
   #split it on semi-colons
-  exclusions <- unlist(strsplit(toParse, "; "))
+  exclusions <- as.list(strsplit(toParse, "; ")[[1]])
   
-  #if there are no exclusions, skip this step
+  # if there are no exclusions, skip the next steps
   if(length(exclusions) == 0)
   {
     TRUE
   }
   
-  #otherwise loop over them
+  # otherwise process the exclusions
   else
   {
-    #set the exclusion indicator
-    respected <- 1
-    
+    # convert all taxon statements to species groups.
     for(i in 1:length(exclusions))
     {
-      #figure out if that element is a genus, family, or species group
-      theFamily <- unique(addition.statements$family[addition.statements$family==exclusions[i]])
-      theGenus <- unique(addition.statements$genus[addition.statements$genus==exclusions[i]])
+      # see what matches to genus or to family
+      theFamily <- unique(addition.statements$family[addition.statements$family==exclusions[[i]]])
+      theGenus <- unique(addition.statements$genus[addition.statements$genus==exclusions[[i]]])
       
-      #if there is only one of these things find all the species that belong to that
-      #taxon and check whether they are monophyletic
+      # if exclusions[[i]] is a family, sub in those species to the statement
       if(length(theFamily)==1 & length(theGenus)==0)
       {
-        #this will be all the species in the whole family
-        allSpp <- addition.statements$species[addition.statements$family==theFamily]
-        
-        #subset to those that are actually in the family
-        spp <- allSpp[allSpp %in% tree$tip.label]
-        
-        #append a warning if spp are not monophyletic
-        if(!is.monophyletic(tree, spp))
-        {
-          tempWarning <- "The exclusion taxon is not monophyletic"
-          warnMessages <- paste(warnMessages, tempWarning, sep=". ")
-        }
+        tempTaxon <- theFamily
+        allFamilySpp <- addition.statements$species[addition.statements$family==tempTaxon]
+        exclusions[[i]] <- allFamilySpp
       }
       
-      #do the same for a genus here
+      # if it's a genus, handle accordingly
       else if(length(theFamily)==0 & length(theGenus)==1)
       {
-        #this will be all the species in the whole genus
-        allSpp <- addition.statements$species[addition.statements$genus==theGenus]
-        
-        #subset to those that are actually in the tree
-        spp <- allSpp[allSpp %in% tree$tip.label]
-        
-        #append a warning if spp are not monophyletic
-        if(!is.monophyletic(tree, spp))
-        {
-          tempWarning <- "The exclusion taxon is not monophyletic"
-          warnMessages <- paste(warnMessages, tempWarning, sep=". ")
-        }
+        tempTaxon <- theGenus
+        allGenusSpp <- addition.statements$species[addition.statements$genus==tempTaxon]
+        exclusions[[i]] <- allGenusSpp
       }
       
-      #if both of these are length = 1, something is wrong
+      # haven't encountered this but just in case
       else if(length(theFamily)==1 & length(theGenus)==1)
       {
+        #throw an error if both of these are 1
         stop("Genus and family names cannot overlap")
       }
       
-      #otherwise assume this is a species group. confirm all species are valid first
+      # otherwise assume it already is a species group and handle accordingly
       else
       {
-        #remember that you will have passed it a single character vector split up by commas
-        #with spaces. parse this into a longer vector
-        parsedSpp <- unlist(strsplit(exclusions[i], ", "))
+        parsedSpp <- unlist(strsplit(exclusions[[i]], ", "))
+  
+        # add a check to ensure everything is correctly spelled if species are being added directly
+        checks <- addition.statements$species[addition.statements$species %in% parsedSpp]
         
-        allSpp <- addition.statements$species[addition.statements$species %in% parsedSpp]
-        
-        #if these are not of equal length, there's a misspelling or something
-        if(length(allSpp) != length(parsedSpp))
+        # if these are not of equal length, there's a misspelling or something
+        if(length(checks) != length(parsedSpp))
         {
           print(missing.sp)
           stop("One of your species is misspelled")
         }
         
-        #subset to species in the tree
-        spp <- allSpp[allSpp %in% tree$tip.label]
+        #set into right place
+        exclusions[[i]] <- parsedSpp
       }
+    }
+
+    #set the exclusion indicator
+    respected <- 1
+    
+    for(i in 1:length(exclusions))
+    {
+      # subset exclusions to those species that are actually in the tree
+      spp <- tree$tip.label[tree$tip.label %in% exclusions[[i]]]
       
       #it is possible that the species you are trying not to break up haven't been added to the
       #tree yet. if length of spp == 0, bump to next exclusion
@@ -420,8 +333,7 @@ additionPrep <- function(tree, addition.statements, missing.sp)
     }
   }
   
-  #confirm that allNodes is at least one long. the way you sample needs to change
-  #here too. if it's not at least one long, there are no valid nodes and you're hosed
+  #confirm that allNodes is at least one long. 
   if(length(allNodes)==1)
   {
     bindTo <- allNodes
