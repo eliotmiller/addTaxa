@@ -81,14 +81,6 @@ customAdd <- function(tree, addition.statements, no.trees)
 			tree <- phytools::bind.tip(tree=tree, tip.label=toAdd[j,"species"],
 			                           where=prepResults$bind.node, position=bindDist)
 			
-			# # drop to the subtree that contains our species in question and plot
-			# subTree <- drop.tip(tree, setdiff(tree$tip.label,
-			#                                   c("Berenicornis_comatus", "Horizocerus_albocristatus",
-			#                                     "Horizocerus_cassini", "Horizocerus_hartlaubi",
-			#                                     "Horizocerus_granti")))
-			# 
-			# plot(subTree)
-			
       #log the info in the results
 			results$bind.node[j] <- prepResults$bind.node
 			results$bumped.back[j] <- prepResults$bumped.back
