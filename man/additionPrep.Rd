@@ -9,13 +9,23 @@ additionPrep(tree, addition.statements, missing.sp)
 \arguments{
 \item{tree}{An ape-style phylogenetic tree.}
 
-\item{addition.statements}{A data frame with some specific formatting.}
+\item{addition.statements}{A data frame of taxonomy, including species currently
+in the tree, as well as all species that need to be added. The data frame needs
+to contain the following columns: "species","family","genus","add.to", and 
+"do.not.break". "add.to" now respects unlimited addition statements, each more specific
+than the last, separated by a semi-colon. Families, genera, and species groups
+are all permitted. Species groups need to have species separated by commas.
+Large clades can be targeted by specifying species that span the desired MRCA.
+The exclusion statements, contained in the "do.not.break" column, can also
+take the form of families, genera, and species groups, and are also separated
+by semi-colons. These are additive, i.e. two or more clades can be excluded at
+once.}
 
 \item{missing.sp}{The name of the missing species.}
 }
 \value{
-A vector of valid nodes to which to bind missing.sp. Something about warnings
-and errors too.
+A data frame specifying the node to which to bind the missing species,
+as well as details about how that selection was made.
 }
 \description{
 Given a data frame of species and taxonomic assignments, and a phylogeny with
@@ -23,21 +33,8 @@ some of those species in it, will determine the allowed positions for a
 particular missing taxon.
 }
 \details{
-The add.to column should list a unique genus, a unique family, or a species
-group, where each entry in the group is a valid taxon separated by a comma. The 
-add.to column will very infrequently have a semi-colon in it. If it does,
-what it means is that we should attempt to sub out each taxon for a clade, but that
-if that clade doesn't exist yet, we should remove it for now. Unless one of the taxa
-separated by a semi-colon is a species group, in which case we should add to what exists
-of that group, if anything. This could happen if, for example,
-two species are missing from a genus, and we know that the species are sister, 
-but we don't know where within the genus they go. Importantly, the narrower taxonomic
-scope taxon should always be listed second here, e.g. if you want the final arrangement
-for the three species in GenusA to be ((sp1,sp2),sp3), and only sp3 is in there at the
-moment, then both addition statements for sp1 and sp2 should be written as
-GenusA; GenusA_sp1, GenusA_sp2. The algorithm will first check whether either species
-in that group is present. If not, it will bind the taxon in to something within GenusA,
-which will be sp3. If so, it will bind the taxon in to whichever of sp1 or sp2 is present.
+The work horse behind customAdd(). See additional details in that
+function.
 }
 \references{
 Mast et al. 2015. Paraphyly changes understanding of timing and tempo of 

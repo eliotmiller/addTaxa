@@ -2,18 +2,35 @@
 #'
 #' Given a data frame of species and taxonomic assignments, and an accepted phylogeny with
 #' some of those species in it, will add the missing species in next to a taxonomic 
-#' relative. Optionally, can keep track of which named clades species are bound to.
+#' relative. 
 #'
 #' @param tree An ape-style phylogenetic tree.
-#' @param addition.statements See details.
+#' @param addition.statements A data frame of taxonomy, including species currently
+#' in the tree, as well as all species that need to be added. The data frame needs
+#' to contain the following columns: "species","family","genus","add.to", and 
+#' "do.not.break". "add.to" now respects unlimited addition statements, each more specific
+#' than the last, separated by a semi-colon. Families, genera, and species groups
+#' are all permitted. Species groups need to have species separated by commas.
+#' Large clades can be targeted by specifying species that span the desired MRCA.
+#' The exclusion statements, contained in the "do.not.break" column, can also
+#' take the form of families, genera, and species groups, and are also separated
+#' by semi-colons. These are additive, i.e. two or more clades can be excluded at
+#' once.
 #' @param no.trees The number of desired final trees with all missing species from 
-#' groupings added.
+#' groupings added. Frequently not used (i.e. set at 1), since it may be desirable
+#' to randomize the missing species addition order, and that can't be done with
+#' this function.
 #' 
-#' @details All the gory stuff.
+#' @details The exclusions are not always respected exactly as intended. The most
+#' obvious time this crops up seems to be when a missing species is not supposed
+#' to render the genus it is being added to as polyphyletic. The species will
+#' always be added as sister to the existing members of the genus, but inside the
+#' clade would also be technically correct. Need to add code for this special case.
 #'
 #' @return A list with two elements: (1) multiPhylo object with number of trees as 
-#' determined by no.trees, and, if clade.membership was provided, (2) a list of data 
-#' frames summarizing the addition results.
+#' determined by no.trees, and (2) a list of data 
+#' frames summarizing the addition results (warnings, whether exclusions were respected,
+#' what node the species was bound to, etc).
 #'
 #' @export
 #'
